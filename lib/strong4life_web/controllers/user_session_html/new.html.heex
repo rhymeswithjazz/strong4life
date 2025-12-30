@@ -5,8 +5,8 @@
       <h1 class="text-4xl font-bold text-emerald-400 mb-2">Strong4Life</h1>
       <p class="text-slate-400">Your strength training companion</p>
     </div>
-
-    <!-- Flash Messages -->
+    
+<!-- Flash Messages -->
     <%= if Phoenix.Flash.get(@flash, :info) do %>
       <div class="bg-emerald-500/20 border border-emerald-500/50 rounded-xl p-4 mb-6">
         <p class="text-emerald-400">{Phoenix.Flash.get(@flash, :info)}</p>
@@ -17,8 +17,8 @@
         <p class="text-red-400">{Phoenix.Flash.get(@flash, :error)}</p>
       </div>
     <% end %>
-
-    <!-- Login Card -->
+    
+<!-- Login Card -->
     <div class="bg-slate-800/50 backdrop-blur rounded-2xl border border-slate-700 p-6">
       <h2 class="text-2xl font-bold text-white mb-2 text-center">Welcome Back</h2>
       <p class="text-slate-400 text-center mb-6">
@@ -28,26 +28,46 @@
           Sign in to continue your training journey.
         <% end %>
       </p>
-
-      <!-- Dev mode mail adapter notice -->
+      
+<!-- Dev mode mail adapter notice -->
       <%= if local_mail_adapter?() do %>
         <div class="bg-blue-500/20 border border-blue-500/50 rounded-xl p-4 mb-6">
           <div class="flex items-start gap-3">
-            <svg class="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <svg
+              class="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
             <div class="text-sm">
               <p class="text-blue-300">Development mode: Using local mail adapter.</p>
               <p class="text-blue-400/70">
-                View sent emails at <.link href="/dev/mailbox" class="underline hover:text-blue-300">/dev/mailbox</.link>
+                View sent emails at
+                <.link href="/dev/mailbox" class="underline hover:text-blue-300">
+                  /dev/mailbox
+                </.link>
               </p>
             </div>
           </div>
         </div>
       <% end %>
-
-      <!-- Magic Link Login -->
-      <.form :let={f} for={@form} as={:user} id="login_form_magic" action={~p"/users/log-in"} class="mb-6">
+      
+<!-- Magic Link Login -->
+      <.form
+        :let={f}
+        for={@form}
+        as={:user}
+        id="login_form_magic"
+        action={~p"/users/log-in"}
+        class="mb-6"
+      >
         <div class="mb-4">
           <label for={f[:email].id} class="block text-sm font-medium text-slate-300 mb-2">
             Email Address
@@ -74,13 +94,18 @@
           class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-semibold py-3 rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+            />
           </svg>
           Send Magic Link
         </button>
       </.form>
-
-      <!-- Divider -->
+      
+<!-- Divider -->
       <div class="relative my-6">
         <div class="absolute inset-0 flex items-center">
           <div class="w-full border-t border-slate-700"></div>
@@ -89,11 +114,21 @@
           <span class="px-4 bg-slate-800/50 text-slate-500">or sign in with password</span>
         </div>
       </div>
-
-      <!-- Password Login -->
-      <.form :let={f} for={@form} as={:user} id="login_form_password" action={~p"/users/log-in"} class="space-y-4">
+      
+<!-- Password Login -->
+      <.form
+        :let={f}
+        for={@form}
+        as={:user}
+        id="login_form_password"
+        action={~p"/users/log-in"}
+        class="space-y-4"
+      >
         <div>
-          <label for={f[:email].id <> "_password"} class="block text-sm font-medium text-slate-300 mb-2">
+          <label
+            for={f[:email].id <> "_password"}
+            class="block text-sm font-medium text-slate-300 mb-2"
+          >
             Email Address
           </label>
           <input
@@ -143,12 +178,15 @@
         </button>
       </.form>
     </div>
-
-    <!-- Register Link -->
+    
+<!-- Register Link -->
     <%= unless @current_scope do %>
       <p class="text-center text-slate-400 mt-6">
         Don't have an account?
-        <.link navigate={~p"/users/register"} class="text-emerald-400 hover:text-emerald-300 font-semibold">
+        <.link
+          navigate={~p"/users/register"}
+          class="text-emerald-400 hover:text-emerald-300 font-semibold"
+        >
           Create one now
         </.link>
       </p>

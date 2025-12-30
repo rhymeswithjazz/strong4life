@@ -36,4 +36,3 @@ defmodule Strong4life.Workouts.WorkoutSession do
     |> put_change(:completed_at, DateTime.utc_now() |> DateTime.truncate(:second))
   end
 end
-

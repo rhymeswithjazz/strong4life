@@ -32,4 +32,3 @@ defmodule Strong4life.Workouts.WorkoutSet do
     |> unique_constraint([:workout_session_id, :exercise_id, :set_number])
   end
 end
-

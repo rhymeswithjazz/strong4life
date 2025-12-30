@@ -68,14 +68,19 @@ defmodule Strong4lifeWeb.ProgressLive do
         <header class="flex items-center justify-between mb-6">
           <.link navigate={~p"/dashboard"} class="text-slate-400 hover:text-white">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 19l-7-7 7-7"
+              />
             </svg>
           </.link>
           <h1 class="text-xl font-bold text-white">Progress</h1>
           <div class="w-6"></div>
         </header>
-
-        <!-- Exercise Selector -->
+        
+    <!-- Exercise Selector -->
         <div class="mb-6">
           <label class="block text-slate-400 text-sm mb-2">Select Exercise</label>
           <select
@@ -84,14 +89,17 @@ defmodule Strong4lifeWeb.ProgressLive do
             class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
           >
             <%= for exercise <- @exercises do %>
-              <option value={exercise.id} selected={@selected_exercise && @selected_exercise.id == exercise.id}>
+              <option
+                value={exercise.id}
+                selected={@selected_exercise && @selected_exercise.id == exercise.id}
+              >
                 {exercise.name}
               </option>
             <% end %>
           </select>
         </div>
-
-        <!-- Chart Type Toggle -->
+        
+    <!-- Chart Type Toggle -->
         <div class="flex gap-2 mb-6">
           <button
             phx-click="toggle_chart"
@@ -120,8 +128,8 @@ defmodule Strong4lifeWeb.ProgressLive do
             Volume
           </button>
         </div>
-
-        <!-- Chart -->
+        
+    <!-- Chart -->
         <div class="bg-slate-800/50 backdrop-blur rounded-2xl border border-slate-700 p-4 mb-6">
           <%= if @chart_type == "weight" do %>
             <h3 class="text-white font-medium mb-4">Weight Progress (lbs)</h3>
@@ -161,8 +169,8 @@ defmodule Strong4lifeWeb.ProgressLive do
             <% end %>
           <% end %>
         </div>
-
-        <!-- Stats Summary -->
+        
+    <!-- Stats Summary -->
         <%= if @selected_exercise do %>
           <div class="grid grid-cols-2 gap-4 mb-6">
             <div class="bg-slate-800/50 backdrop-blur rounded-2xl border border-slate-700 p-4">
@@ -179,39 +187,73 @@ defmodule Strong4lifeWeb.ProgressLive do
             </div>
           </div>
         <% end %>
-
-        <!-- Navigation -->
+        
+    <!-- Navigation -->
         <nav class="fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur border-t border-slate-800 px-4 py-3">
           <div class="max-w-lg mx-auto flex justify-around">
-            <.link navigate={~p"/dashboard"} class="flex flex-col items-center text-slate-400 hover:text-slate-300">
+            <.link
+              navigate={~p"/dashboard"}
+              class="flex flex-col items-center text-slate-400 hover:text-slate-300"
+            >
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                />
               </svg>
               <span class="text-xs mt-1">Home</span>
             </.link>
-            <.link navigate={~p"/history"} class="flex flex-col items-center text-slate-400 hover:text-slate-300">
+            <.link
+              navigate={~p"/history"}
+              class="flex flex-col items-center text-slate-400 hover:text-slate-300"
+            >
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
               <span class="text-xs mt-1">History</span>
             </.link>
             <.link navigate={~p"/progress"} class="flex flex-col items-center text-emerald-400">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                />
               </svg>
               <span class="text-xs mt-1">Progress</span>
             </.link>
-            <.link navigate={~p"/users/settings"} class="flex flex-col items-center text-slate-400 hover:text-slate-300">
+            <.link
+              navigate={~p"/users/settings"}
+              class="flex flex-col items-center text-slate-400 hover:text-slate-300"
+            >
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                />
               </svg>
               <span class="text-xs mt-1">Settings</span>
             </.link>
           </div>
         </nav>
-
-        <!-- Bottom padding for fixed nav -->
+        
+    <!-- Bottom padding for fixed nav -->
         <div class="h-20"></div>
       </div>
     </div>
@@ -235,12 +277,14 @@ defmodule Strong4lifeWeb.ProgressLive do
     <div class="flex items-end justify-between h-48 gap-1">
       <%= for item <- @data do %>
         <% value = Map.get(item, @field) %>
-        <% height = if value && @max_value > 0, do: Decimal.to_float(value) / @max_value * 100, else: 0 %>
+        <% height =
+          if value && @max_value > 0, do: Decimal.to_float(value) / @max_value * 100, else: 0 %>
         <div class="flex-1 flex flex-col items-center">
           <div
             class="w-full bg-emerald-500 rounded-t transition-all"
             style={"height: #{height}%"}
-          ></div>
+          >
+          </div>
           <div class="text-xs text-slate-500 mt-1 truncate w-full text-center">
             {format_chart_date(item.date)}
           </div>
@@ -292,4 +336,3 @@ defmodule Strong4lifeWeb.ProgressLive do
     |> Decimal.to_string()
   end
 end
-

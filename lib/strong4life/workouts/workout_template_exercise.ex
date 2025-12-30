@@ -29,4 +29,3 @@ defmodule Strong4life.Workouts.WorkoutTemplateExercise do
     |> unique_constraint([:workout_template_id, :order])
   end
 end
-

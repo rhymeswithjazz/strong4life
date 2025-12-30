@@ -25,7 +25,8 @@ exercises = [
   %{
     name: "Barbell Squat",
     category: "compound",
-    instructions: "Focus on depth and control. Go as deep as you can with good form (chest up, back straight). Keep your core braced throughout the movement.",
+    instructions:
+      "Focus on depth and control. Go as deep as you can with good form (chest up, back straight). Keep your core braced throughout the movement.",
     default_sets: 3,
     default_reps: 5,
     is_accessory: false
@@ -33,7 +34,8 @@ exercises = [
   %{
     name: "Barbell Bench Press",
     category: "compound",
-    instructions: "Keep your shoulder blades retracted and your feet planted firmly on the floor. Lower the bar with control to your chest, then press up explosively.",
+    instructions:
+      "Keep your shoulder blades retracted and your feet planted firmly on the floor. Lower the bar with control to your chest, then press up explosively.",
     default_sets: 3,
     default_reps: 5,
     is_accessory: false
@@ -41,7 +43,8 @@ exercises = [
   %{
     name: "Barbell Row",
     category: "compound",
-    instructions: "Keep your back flat and pull the bar towards your lower chest/stomach. Squeeze your shoulder blades together at the top of the movement.",
+    instructions:
+      "Keep your back flat and pull the bar towards your lower chest/stomach. Squeeze your shoulder blades together at the top of the movement.",
     default_sets: 3,
     default_reps: 8,
     is_accessory: false
@@ -49,7 +52,8 @@ exercises = [
   %{
     name: "Barbell Overhead Press",
     category: "compound",
-    instructions: "Brace your core and glutes. Don't lean back too much. Press the bar straight up, moving your head back slightly to allow the bar path.",
+    instructions:
+      "Brace your core and glutes. Don't lean back too much. Press the bar straight up, moving your head back slightly to allow the bar path.",
     default_sets: 3,
     default_reps: 5,
     is_accessory: false
@@ -57,7 +61,8 @@ exercises = [
   %{
     name: "Barbell Deadlift",
     category: "compound",
-    instructions: "Keep your back flat and chest up. Push through your heels and drive your hips forward. Consider Romanian Deadlifts (RDLs) for less lower back strain.",
+    instructions:
+      "Keep your back flat and chest up. Push through your heels and drive your hips forward. Consider Romanian Deadlifts (RDLs) for less lower back strain.",
     default_sets: 3,
     default_reps: 5,
     is_accessory: false
@@ -65,7 +70,8 @@ exercises = [
   %{
     name: "Close Grip Bench Press",
     category: "compound",
-    instructions: "Use a grip slightly narrower than shoulder width. This variation emphasizes the triceps more while still working the chest.",
+    instructions:
+      "Use a grip slightly narrower than shoulder width. This variation emphasizes the triceps more while still working the chest.",
     default_sets: 3,
     default_reps: 8,
     is_accessory: false
@@ -75,7 +81,8 @@ exercises = [
   %{
     name: "Face Pulls",
     category: "accessory",
-    instructions: "Pull the rope towards your face, focusing on external rotation at the shoulders. Excellent for shoulder health and rear delt development.",
+    instructions:
+      "Pull the rope towards your face, focusing on external rotation at the shoulders. Excellent for shoulder health and rear delt development.",
     default_sets: 3,
     default_reps: 15,
     is_accessory: true
@@ -83,15 +90,18 @@ exercises = [
   %{
     name: "Plank",
     category: "accessory",
-    instructions: "Hold a straight body position from head to heels. Keep your core tight and don't let your hips sag or pike up.",
+    instructions:
+      "Hold a straight body position from head to heels. Keep your core tight and don't let your hips sag or pike up.",
     default_sets: 3,
-    default_reps: 45,  # Seconds
+    # Seconds
+    default_reps: 45,
     is_accessory: true
   },
   %{
     name: "Dumbbell Lunges",
     category: "accessory",
-    instructions: "Take a controlled step forward, lowering your back knee towards the ground. Keep your torso upright throughout the movement.",
+    instructions:
+      "Take a controlled step forward, lowering your back knee towards the ground. Keep your torso upright throughout the movement.",
     default_sets: 3,
     default_reps: 10,
     is_accessory: true
@@ -99,7 +109,8 @@ exercises = [
   %{
     name: "Hanging Knee Raises",
     category: "accessory",
-    instructions: "Hang from a bar and raise your knees towards your chest. Control the movement and avoid swinging.",
+    instructions:
+      "Hang from a bar and raise your knees towards your chest. Control the movement and avoid swinging.",
     default_sets: 3,
     default_reps: 12,
     is_accessory: true
@@ -115,6 +126,7 @@ exercise_map =
           %Exercise{}
           |> Exercise.changeset(exercise_attrs)
           |> Repo.insert()
+
         Map.put(acc, exercise_attrs.name, exercise)
 
       existing ->
@@ -122,6 +134,7 @@ exercise_map =
           existing
           |> Exercise.changeset(exercise_attrs)
           |> Repo.update()
+
         Map.put(acc, exercise_attrs.name, exercise)
     end
   end)
@@ -154,9 +167,11 @@ workout_a =
         %WorkoutTemplate{}
         |> WorkoutTemplate.changeset(%{
           name: "Workout A",
-          description: "Full body workout focusing on Squat, Bench Press, and Rows. Include Face Pulls for shoulder health."
+          description:
+            "Full body workout focusing on Squat, Bench Press, and Rows. Include Face Pulls for shoulder health."
         })
         |> Repo.insert()
+
       template
 
     existing ->
@@ -171,9 +186,11 @@ workout_b =
         %WorkoutTemplate{}
         |> WorkoutTemplate.changeset(%{
           name: "Workout B",
-          description: "Full body workout focusing on Overhead Press, Deadlift, and Close Grip Bench. Include Lunges for leg accessory work."
+          description:
+            "Full body workout focusing on Overhead Press, Deadlift, and Close Grip Bench. Include Lunges for leg accessory work."
         })
         |> Repo.insert()
+
       template
 
     existing ->

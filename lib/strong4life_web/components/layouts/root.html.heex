@@ -2,26 +2,32 @@
 <html lang="en" class="h-full">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+    />
     <meta name="csrf-token" content={get_csrf_token()} />
     
-    <!-- PWA Meta Tags -->
+<!-- PWA Meta Tags -->
     <meta name="theme-color" content="#0f172a" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Strong4Life" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="application-name" content="Strong4Life" />
-    <meta name="description" content="Track your strength training workouts with the Strong4Life program" />
+    <meta
+      name="description"
+      content="Track your strength training workouts with the Strong4Life program"
+    />
     
-    <!-- PWA Manifest -->
+<!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json" />
     
-    <!-- Icons -->
+<!-- Icons -->
     <link rel="apple-touch-icon" sizes="180x180" href={~p"/images/apple-touch-icon.png"} />
     <link rel="icon" type="image/png" sizes="32x32" href={~p"/images/favicon-32x32.png"} />
     <link rel="icon" type="image/png" sizes="16x16" href={~p"/images/favicon-16x16.png"} />
-    
+
     <.live_title default="Strong4Life" suffix=" · Workout Tracker">
       {assigns[:page_title]}
     </.live_title>
@@ -63,14 +69,21 @@
                 <.link href={~p"/users/settings"} class="text-slate-400 hover:text-white text-sm">
                   {@current_scope.user.email}
                 </.link>
-                <.link href={~p"/users/log-out"} method="delete" class="text-slate-400 hover:text-white text-sm">
+                <.link
+                  href={~p"/users/log-out"}
+                  method="delete"
+                  class="text-slate-400 hover:text-white text-sm"
+                >
                   Log out
                 </.link>
               <% else %>
                 <.link href={~p"/users/register"} class="text-slate-400 hover:text-white text-sm">
                   Register
                 </.link>
-                <.link href={~p"/users/log-in"} class="bg-emerald-500 hover:bg-emerald-400 text-slate-900 px-4 py-2 rounded-lg text-sm font-medium">
+                <.link
+                  href={~p"/users/log-in"}
+                  class="bg-emerald-500 hover:bg-emerald-400 text-slate-900 px-4 py-2 rounded-lg text-sm font-medium"
+                >
                   Log in
                 </.link>
               <% end %>

@@ -5,8 +5,8 @@
       <h1 class="text-4xl font-bold text-emerald-400 mb-2">Strong4Life</h1>
       <p class="text-slate-400">Your strength training companion</p>
     </div>
-
-    <!-- Flash Messages -->
+    
+<!-- Flash Messages -->
     <%= if Phoenix.Flash.get(@flash, :info) do %>
       <div class="bg-emerald-500/20 border border-emerald-500/50 rounded-xl p-4 mb-6">
         <p class="text-emerald-400">{Phoenix.Flash.get(@flash, :info)}</p>
@@ -17,14 +17,24 @@
         <p class="text-red-400">{Phoenix.Flash.get(@flash, :error)}</p>
       </div>
     <% end %>
-
-    <!-- Confirmation Card -->
+    
+<!-- Confirmation Card -->
     <div class="bg-slate-800/50 backdrop-blur rounded-2xl border border-slate-700 p-6">
       <!-- Welcome Icon -->
       <div class="flex justify-center mb-4">
         <div class="w-16 h-16 bg-emerald-500/20 rounded-full flex items-center justify-center">
-          <svg class="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          <svg
+            class="w-8 h-8 text-emerald-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M5 13l4 4L19 7"
+            />
           </svg>
         </div>
       </div>
@@ -49,7 +59,7 @@
           class="space-y-3"
         >
           <input type="hidden" name={@form[:token].name} value={@form[:token].value} />
-          
+
           <button
             type="submit"
             name={@form[:remember_me].name}
@@ -58,7 +68,7 @@
           >
             Confirm & Stay Logged In
           </button>
-          
+
           <button
             type="submit"
             class="w-full bg-slate-700 hover:bg-slate-600 text-white font-medium py-3 rounded-xl transition-all border border-slate-600"
@@ -66,15 +76,26 @@
             Confirm & Log In Once
           </button>
         </.form>
-
-        <!-- Tip -->
+        
+<!-- Tip -->
         <div class="mt-6 pt-6 border-t border-slate-700">
           <div class="flex items-start gap-3 text-sm">
-            <svg class="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <svg
+              class="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
             <p class="text-slate-400">
-              <span class="text-amber-400 font-medium">Tip:</span> You can enable password login in your account settings.
+              <span class="text-amber-400 font-medium">Tip:</span>
+              You can enable password login in your account settings.
             </p>
           </div>
         </div>
@@ -87,7 +108,7 @@
           class="space-y-3"
         >
           <input type="hidden" name={@form[:token].name} value={@form[:token].value} />
-          
+
           <%= if @current_scope do %>
             <button
               type="submit"
@@ -104,7 +125,7 @@
             >
               Stay Logged In
             </button>
-            
+
             <button
               type="submit"
               class="w-full bg-slate-700 hover:bg-slate-600 text-white font-medium py-3 rounded-xl transition-all border border-slate-600"

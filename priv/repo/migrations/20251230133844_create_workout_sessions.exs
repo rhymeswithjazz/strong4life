@@ -5,7 +5,10 @@ defmodule Strong4life.Repo.Migrations.CreateWorkoutSessions do
     create table(:workout_sessions, primary_key: false) do
       add :id, :binary_id, primary_key: true
       add :user_id, references(:users, type: :id, on_delete: :delete_all), null: false
-      add :workout_template_id, references(:workout_templates, type: :binary_id, on_delete: :nilify_all)
+
+      add :workout_template_id,
+          references(:workout_templates, type: :binary_id, on_delete: :nilify_all)
+
       add :started_at, :utc_datetime, null: false
       add :completed_at, :utc_datetime
       add :notes, :text

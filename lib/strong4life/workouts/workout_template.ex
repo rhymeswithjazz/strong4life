@@ -24,4 +24,3 @@ defmodule Strong4life.Workouts.WorkoutTemplate do
     |> unique_constraint(:name)
   end
 end
-

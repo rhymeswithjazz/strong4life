@@ -11,4 +11,3 @@ defmodule Strong4lifeWeb.HealthController do
     json(conn, %{status: "ok", timestamp: DateTime.utc_now()})
   end
 end
-

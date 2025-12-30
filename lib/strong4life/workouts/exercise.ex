@@ -30,4 +30,3 @@ defmodule Strong4life.Workouts.Exercise do
     |> validate_number(:default_reps, greater_than: 0, less_than_or_equal_to: 50)
   end
 end
-

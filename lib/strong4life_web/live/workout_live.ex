@@ -206,7 +206,12 @@ defmodule Strong4lifeWeb.WorkoutLive do
         <header class="flex items-center justify-between mb-6">
           <.link navigate={~p"/dashboard"} class="text-slate-400 hover:text-white">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 19l-7-7 7-7"
+              />
             </svg>
           </.link>
           <h1 class="text-xl font-bold text-white">{@template.name}</h1>
@@ -217,8 +222,8 @@ defmodule Strong4lifeWeb.WorkoutLive do
             Finish
           </button>
         </header>
-
-        <!-- Rest Timer Overlay -->
+        
+    <!-- Rest Timer Overlay -->
         <%= if @rest_timer do %>
           <div class="fixed inset-0 bg-slate-900/95 backdrop-blur flex items-center justify-center z-50">
             <div class="text-center">
@@ -251,8 +256,8 @@ defmodule Strong4lifeWeb.WorkoutLive do
             </div>
           </div>
         <% end %>
-
-        <!-- Exercise Tabs -->
+        
+    <!-- Exercise Tabs -->
         <div class="flex overflow-x-auto gap-2 mb-6 pb-2 -mx-4 px-4">
           <%= for {exercise_data, index} <- Enum.with_index(@exercises) do %>
             <button
@@ -273,8 +278,8 @@ defmodule Strong4lifeWeb.WorkoutLive do
             </button>
           <% end %>
         </div>
-
-        <!-- Current Exercise Card -->
+        
+    <!-- Current Exercise Card -->
         <%= if current_exercise = Enum.at(@exercises, @current_exercise_index) do %>
           <div class="bg-slate-800/50 backdrop-blur rounded-2xl border border-slate-700 p-6 mb-6">
             <h2 class="text-xl font-bold text-white mb-2">
@@ -288,8 +293,8 @@ defmodule Strong4lifeWeb.WorkoutLive do
                 Last time: {current_exercise.suggested_weight} lbs
               </div>
             <% end %>
-
-            <!-- Instructions -->
+            
+    <!-- Instructions -->
             <%= if current_exercise.exercise.instructions do %>
               <details class="mb-4">
                 <summary class="text-slate-400 text-sm cursor-pointer hover:text-slate-300">
@@ -300,8 +305,8 @@ defmodule Strong4lifeWeb.WorkoutLive do
                 </p>
               </details>
             <% end %>
-
-            <!-- Sets -->
+            
+    <!-- Sets -->
             <div class="space-y-4">
               <%= for set <- current_exercise.sets do %>
                 <.set_row
@@ -315,8 +320,8 @@ defmodule Strong4lifeWeb.WorkoutLive do
             </div>
           </div>
         <% end %>
-
-        <!-- Complete Modal -->
+        
+    <!-- Complete Modal -->
         <%= if @show_complete_modal do %>
           <div class="fixed inset-0 bg-slate-900/95 backdrop-blur flex items-center justify-center z-50 p-4">
             <div class="bg-slate-800 rounded-2xl border border-slate-700 p-6 w-full max-w-md">
@@ -454,4 +459,3 @@ defmodule Strong4lifeWeb.WorkoutLive do
     Enum.all?(sets, & &1.completed)
   end
 end
-

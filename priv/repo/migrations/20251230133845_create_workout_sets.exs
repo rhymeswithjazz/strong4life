@@ -4,8 +4,13 @@ defmodule Strong4life.Repo.Migrations.CreateWorkoutSets do
   def change do
     create table(:workout_sets, primary_key: false) do
       add :id, :binary_id, primary_key: true
-      add :workout_session_id, references(:workout_sessions, type: :binary_id, on_delete: :delete_all), null: false
-      add :exercise_id, references(:exercises, type: :binary_id, on_delete: :delete_all), null: false
+
+      add :workout_session_id,
+          references(:workout_sessions, type: :binary_id, on_delete: :delete_all), null: false
+
+      add :exercise_id, references(:exercises, type: :binary_id, on_delete: :delete_all),
+        null: false
+
       add :set_number, :integer, null: false
       add :weight, :decimal, precision: 6, scale: 2
       add :reps, :integer

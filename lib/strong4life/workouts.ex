@@ -333,7 +333,10 @@ defmodule Strong4life.Workouts do
     WorkoutSet
     |> join(:inner, [ws], s in WorkoutSession, on: ws.workout_session_id == s.id)
     |> where([ws, s], s.user_id == ^user_id and ws.exercise_id == ^exercise_id)
-    |> where([ws, s], not is_nil(s.completed_at) and not is_nil(ws.weight) and not is_nil(ws.reps))
+    |> where(
+      [ws, s],
+      not is_nil(s.completed_at) and not is_nil(ws.weight) and not is_nil(ws.reps)
+    )
     |> group_by([ws, s], fragment("DATE(?)", s.completed_at))
     |> order_by([ws, s], desc: fragment("DATE(?)", s.completed_at))
     |> limit(^limit)
@@ -345,4 +348,3 @@ defmodule Strong4life.Workouts do
     |> Enum.reverse()
   end
 end
-
