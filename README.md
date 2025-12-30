@@ -63,12 +63,18 @@ Alternate between Workout A and Workout B across 3 days per week:
    mix setup
    ```
 
-4. Start the Phoenix server:
+4. Setup git hooks (optional but recommended):
+   ```bash
+   ./scripts/setup-git-hooks.sh
+   ```
+   This installs a pre-commit hook that automatically formats code before commits.
+
+5. Start the Phoenix server:
    ```bash
    mix phx.server
    ```
 
-5. Visit [`localhost:4000`](http://localhost:4000)
+6. Visit [`localhost:4000`](http://localhost:4000)
 
 ## Production Deployment (Portainer)
 

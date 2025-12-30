@@ -36,6 +36,9 @@ mix phx.server
 
 ### Development Workflow
 ```bash
+# Setup git hooks (auto-format on commit)
+./scripts/setup-git-hooks.sh
+
 # Run tests
 mix test
 
