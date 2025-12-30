@@ -45,7 +45,9 @@
           />
           <%= if f[:email].errors != [] do %>
             <p class="mt-2 text-sm text-red-400">
-              {Phoenix.HTML.Form.input_validations(f[:email], []) |> Enum.map(fn {msg, _opts} -> msg end) |> Enum.join(", ")}
+              <%= for error <- f[:email].errors do %>
+                {Strong4lifeWeb.CoreComponents.translate_error(error)}
+              <% end %>
             </p>
           <% end %>
         </div>
@@ -103,8 +105,8 @@
           />
           <%= if f[:password].errors != [] do %>
             <p class="mt-2 text-sm text-red-400">
-              <%= for {msg, _opts} <- f[:password].errors do %>
-                {msg}
+              <%= for error <- f[:password].errors do %>
+                {Strong4lifeWeb.CoreComponents.translate_error(error)}
               <% end %>
             </p>
           <% end %>
@@ -129,8 +131,8 @@
           />
           <%= if f[:password_confirmation].errors != [] do %>
             <p class="mt-2 text-sm text-red-400">
-              <%= for {msg, _opts} <- f[:password_confirmation].errors do %>
-                {msg}
+              <%= for error <- f[:password_confirmation].errors do %>
+                {Strong4lifeWeb.CoreComponents.translate_error(error)}
               <% end %>
             </p>
           <% end %>

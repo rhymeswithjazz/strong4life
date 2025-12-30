@@ -49,7 +49,7 @@ defmodule Strong4lifeWeb.UserSettingsController do
         |> UserAuth.log_in_user(user)
 
       {:error, changeset} ->
-        render(conn, :edit, password_changeset: changeset)
+        render(conn, :edit, password_changeset: %{changeset | action: :update})
     end
   end
 

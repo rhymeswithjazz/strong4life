@@ -12,9 +12,9 @@ defmodule Strong4lifeWeb.UserSessionControllerTest do
     test "renders login page", %{conn: conn} do
       conn = get(conn, ~p"/users/log-in")
       response = html_response(conn, 200)
-      assert response =~ "Log in"
+      assert response =~ "Welcome Back"
       assert response =~ ~p"/users/register"
-      assert response =~ "Log in with email"
+      assert response =~ "Send Magic Link"
     end
 
     test "renders login page with email filled in (sudo mode)", %{conn: conn, user: user} do
@@ -24,20 +24,21 @@ defmodule Strong4lifeWeb.UserSessionControllerTest do
         |> get(~p"/users/log-in")
         |> html_response(200)
 
-      assert html =~ "You need to reauthenticate"
-      refute html =~ "Register"
-      assert html =~ "Log in with email"
+      assert html =~ "Please reauthenticate to continue"
+      refute html =~ ~p"/users/register"
+      assert html =~ "Send Magic Link"
 
-      assert html =~
-               ~s(<input type="email" name="user[email]" id="login_form_magic_email" value="#{user.email}")
+      assert html =~ ~s(id="login_form_magic_email_magic")
+      assert html =~ ~s(value="#{user.email}")
+      assert html =~ ~s(readonly)
     end
 
     test "renders login page (email + password)", %{conn: conn} do
       conn = get(conn, ~p"/users/log-in?mode=password")
       response = html_response(conn, 200)
-      assert response =~ "Log in"
+      assert response =~ "Welcome Back"
       assert response =~ ~p"/users/register"
-      assert response =~ "Log in with email"
+      assert response =~ "Send Magic Link"
     end
   end
 
@@ -49,7 +50,7 @@ defmodule Strong4lifeWeb.UserSessionControllerTest do
         end)
 
       conn = get(conn, ~p"/users/log-in/#{token}")
-      assert html_response(conn, 200) =~ "Confirm and stay logged in"
+      assert html_response(conn, 200) =~ "Confirm & Stay Logged In"
     end
 
     test "renders login page for confirmed user", %{conn: conn, user: user} do
