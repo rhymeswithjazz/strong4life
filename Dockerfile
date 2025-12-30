@@ -81,10 +81,11 @@ ENV MIX_ENV="prod"
 ENV PHX_SERVER=true
 
 # Only copy the final release from the build stage
-COPY --from=builder --chown=nobody:root /app/_build/${MIX_ENV}/rel/strong4life ./
+COPY --from=builder /app/_build/${MIX_ENV}/rel/strong4life ./
 
-# Ensure binaries are executable
-RUN chmod +x /app/bin/server /app/bin/strong4life
+# Set permissions and ownership (must be done before USER switch)
+RUN chmod +x /app/bin/server /app/bin/strong4life && \
+    chown -R nobody:root /app
 
 USER nobody
 
