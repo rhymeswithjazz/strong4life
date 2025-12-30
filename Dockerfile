@@ -42,11 +42,11 @@ COPY priv priv
 COPY lib lib
 COPY assets assets
 
+# Compile the release (must run before assets to generate colocated hooks)
+RUN mix compile
+
 # Compile assets
 RUN mix assets.deploy
-
-# Compile the release
-RUN mix compile
 
 # Changes to config/runtime.exs don't require recompiling the code
 COPY config/runtime.exs config/
