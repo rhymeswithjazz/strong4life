@@ -84,7 +84,8 @@ ENV PHX_SERVER=true
 COPY --from=builder /app/_build/${MIX_ENV}/rel/strong4life ./
 
 # Set permissions and ownership (must be done before USER switch)
-RUN chmod +x /app/bin/server /app/bin/strong4life && \
+# Use 755 to ensure binaries are executable by any user (needed for docker-compose user override)
+RUN chmod -R 755 /app/bin && \
     chown -R nobody:root /app
 
 USER nobody
