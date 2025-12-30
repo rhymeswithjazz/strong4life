@@ -1,0 +1,11 @@
+#!/bin/sh
+set -eu
+
+cd -P -- "$(dirname -- "$0")"
+
+# Run migrations before starting the server
+echo "Running database migrations..."
+./strong4life eval Strong4life.Release.migrate
+
+echo "Starting Strong4Life server..."
+PHX_SERVER=true exec ./strong4life start
