@@ -1,31 +1,98 @@
-<Layouts.app flash={@flash} current_scope={@current_scope}>
-  <div class="mx-auto max-w-sm">
-    <div class="text-center">
-      <.header>
-        Register for an account
-        <:subtitle>
-          Already registered?
-          <.link navigate={~p"/users/log-in"} class="font-semibold text-brand hover:underline">
-            Log in
-          </.link>
-          to your account now.
-        </:subtitle>
-      </.header>
+<div class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center px-4 py-8">
+  <div class="w-full max-w-md">
+    <!-- Logo & Header -->
+    <div class="text-center mb-8">
+      <h1 class="text-4xl font-bold text-emerald-400 mb-2">Strong4Life</h1>
+      <p class="text-slate-400">Your strength training companion</p>
     </div>
 
-    <.form :let={f} for={@changeset} action={~p"/users/register"}>
-      <.input
-        field={f[:email]}
-        type="email"
-        label="Email"
-        autocomplete="email"
-        required
-        phx-mounted={JS.focus()}
-      />
+    <!-- Flash Messages -->
+    <%= if Phoenix.Flash.get(@flash, :info) do %>
+      <div class="bg-emerald-500/20 border border-emerald-500/50 rounded-xl p-4 mb-6">
+        <p class="text-emerald-400">{Phoenix.Flash.get(@flash, :info)}</p>
+      </div>
+    <% end %>
+    <%= if Phoenix.Flash.get(@flash, :error) do %>
+      <div class="bg-red-500/20 border border-red-500/50 rounded-xl p-4 mb-6">
+        <p class="text-red-400">{Phoenix.Flash.get(@flash, :error)}</p>
+      </div>
+    <% end %>
 
-      <.button phx-disable-with="Creating account..." class="btn btn-primary w-full">
-        Create an account
-      </.button>
-    </.form>
+    <!-- Registration Card -->
+    <div class="bg-slate-800/50 backdrop-blur rounded-2xl border border-slate-700 p-6">
+      <h2 class="text-2xl font-bold text-white mb-2 text-center">Create Account</h2>
+      <p class="text-slate-400 text-center mb-6">
+        Start your strength training journey today.
+      </p>
+
+      <.form :let={f} for={@changeset} action={~p"/users/register"} class="space-y-4">
+        <div>
+          <label for={f[:email].id} class="block text-sm font-medium text-slate-300 mb-2">
+            Email Address
+          </label>
+          <input
+            type="email"
+            id={f[:email].id}
+            name={f[:email].name}
+            value={Phoenix.HTML.Form.input_value(f, :email)}
+            autocomplete="email"
+            required
+            class="w-full bg-slate-700/50 border border-slate-600 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+            placeholder="you@example.com"
+            phx-mounted={Phoenix.LiveView.JS.focus()}
+          />
+          <%= if f[:email].errors != [] do %>
+            <p class="mt-2 text-sm text-red-400">
+              <%= for {msg, _opts} <- f[:email].errors do %>
+                {msg}
+              <% end %>
+            </p>
+          <% end %>
+        </div>
+
+        <button
+          type="submit"
+          class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-semibold py-3 rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+          </svg>
+          Create Account
+        </button>
+      </.form>
+
+      <!-- Features Preview -->
+      <div class="mt-6 pt-6 border-t border-slate-700">
+        <p class="text-slate-500 text-sm text-center mb-4">What you'll get:</p>
+        <div class="space-y-3">
+          <div class="flex items-center gap-3 text-slate-400 text-sm">
+            <svg class="w-5 h-5 text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <span>Pre-built "Strong for Life" workout program</span>
+          </div>
+          <div class="flex items-center gap-3 text-slate-400 text-sm">
+            <svg class="w-5 h-5 text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <span>Track weights, sets, and reps</span>
+          </div>
+          <div class="flex items-center gap-3 text-slate-400 text-sm">
+            <svg class="w-5 h-5 text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <span>Progress charts & workout history</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Login Link -->
+    <p class="text-center text-slate-400 mt-6">
+      Already have an account?
+      <.link navigate={~p"/users/log-in"} class="text-emerald-400 hover:text-emerald-300 font-semibold">
+        Sign in
+      </.link>
+    </p>
   </div>
-</Layouts.app>
+</div>

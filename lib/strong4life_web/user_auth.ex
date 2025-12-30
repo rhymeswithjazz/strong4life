@@ -7,6 +7,58 @@ defmodule Strong4lifeWeb.UserAuth do
   alias Strong4life.Accounts
   alias Strong4life.Accounts.Scope
 
+  # LiveView on_mount callbacks
+
+  @doc """
+  LiveView on_mount callback for handling authentication.
+
+  Supported actions:
+  - `:ensure_authenticated` - requires user to be logged in
+  - `:redirect_if_authenticated` - redirects logged-in users away
+  - `:mount_current_scope` - mounts current scope without enforcement
+  """
+  def on_mount(:ensure_authenticated, _params, session, socket) do
+    socket = mount_current_scope(socket, session)
+
+    if socket.assigns.current_scope && socket.assigns.current_scope.user do
+      {:cont, socket}
+    else
+      socket =
+        socket
+        |> Phoenix.LiveView.put_flash(:error, "You must log in to access this page.")
+        |> Phoenix.LiveView.redirect(to: ~p"/users/log-in")
+
+      {:halt, socket}
+    end
+  end
+
+  def on_mount(:redirect_if_authenticated, _params, session, socket) do
+    socket = mount_current_scope(socket, session)
+
+    if socket.assigns.current_scope && socket.assigns.current_scope.user do
+      {:halt, Phoenix.LiveView.redirect(socket, to: ~p"/dashboard")}
+    else
+      {:cont, socket}
+    end
+  end
+
+  def on_mount(:mount_current_scope, _params, session, socket) do
+    {:cont, mount_current_scope(socket, session)}
+  end
+
+  defp mount_current_scope(socket, session) do
+    Phoenix.Component.assign_new(socket, :current_scope, fn ->
+      if token = session["user_token"] do
+        case Accounts.get_user_by_session_token(token) do
+          {user, _token_inserted_at} -> Scope.for_user(user)
+          nil -> Scope.for_user(nil)
+        end
+      else
+        Scope.for_user(nil)
+      end
+    end)
+  end
+
   # Make the remember me cookie valid for 14 days. This should match
   # the session validity setting in UserToken.
   @max_cookie_age_in_days 14

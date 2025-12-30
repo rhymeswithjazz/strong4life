@@ -67,13 +67,20 @@ defmodule Strong4lifeWeb.Router do
     get "/users/settings", UserSettingsController, :edit
     put "/users/settings", UserSettingsController, :update
     get "/users/settings/confirm-email/:token", UserSettingsController, :confirm_email
+  end
 
-    # Workout App Routes
-    live "/dashboard", DashboardLive, :index
-    live "/workout/:id", WorkoutLive, :show
-    live "/history", HistoryLive, :index
-    live "/history/:id", HistoryLive, :show
-    live "/progress", ProgressLive, :index
+  # Authenticated LiveView routes
+  live_session :require_authenticated_user,
+    on_mount: [{Strong4lifeWeb.UserAuth, :ensure_authenticated}] do
+    scope "/", Strong4lifeWeb do
+      pipe_through [:browser, :require_authenticated_user]
+
+      live "/dashboard", DashboardLive, :index
+      live "/workout/:id", WorkoutLive, :show
+      live "/history", HistoryLive, :index
+      live "/history/:id", HistoryLive, :show
+      live "/progress", ProgressLive, :index
+    end
   end
 
   scope "/", Strong4lifeWeb do
