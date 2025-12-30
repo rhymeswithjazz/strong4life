@@ -6,7 +6,8 @@ defmodule Strong4life.Repo.Migrations.CreateWorkoutSets do
       add :id, :binary_id, primary_key: true
 
       add :workout_session_id,
-          references(:workout_sessions, type: :binary_id, on_delete: :delete_all), null: false
+          references(:workout_sessions, type: :binary_id, on_delete: :delete_all),
+          null: false
 
       add :exercise_id, references(:exercises, type: :binary_id, on_delete: :delete_all),
         null: false

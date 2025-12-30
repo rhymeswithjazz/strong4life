@@ -6,7 +6,8 @@ defmodule Strong4life.Repo.Migrations.CreateWorkoutTemplateExercises do
       add :id, :binary_id, primary_key: true
 
       add :workout_template_id,
-          references(:workout_templates, type: :binary_id, on_delete: :delete_all), null: false
+          references(:workout_templates, type: :binary_id, on_delete: :delete_all),
+          null: false
 
       add :exercise_id, references(:exercises, type: :binary_id, on_delete: :delete_all),
         null: false
