@@ -83,6 +83,9 @@ ENV PHX_SERVER=true
 # Only copy the final release from the build stage
 COPY --from=builder --chown=nobody:root /app/_build/${MIX_ENV}/rel/strong4life ./
 
+# Ensure binaries are executable
+RUN chmod +x /app/bin/server /app/bin/strong4life
+
 USER nobody
 
 # Health check
