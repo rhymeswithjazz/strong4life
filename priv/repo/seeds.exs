@@ -79,12 +79,12 @@ exercises = [
 
   # Accessory Exercises
   %{
-    name: "Face Pulls",
+    name: "Barbell Curls",
     category: "accessory",
     instructions:
-      "Pull the rope towards your face, focusing on external rotation at the shoulders. Excellent for shoulder health and rear delt development.",
+      "Keep your elbows close to your body and focus on the bicep contraction. Keep your core tight and don't let your hips sag or pike up.",
     default_sets: 3,
-    default_reps: 15,
+    default_reps: 10,
     is_accessory: true
   },
   %{
