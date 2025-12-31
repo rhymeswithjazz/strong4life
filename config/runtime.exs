@@ -114,11 +114,9 @@ if config_env() == :prod do
       port: smtp_port,
       username: smtp_username,
       password: smtp_password,
-      ssl: false,
-      tls: :if_available,
+      tls: :always,
       auth: :always,
-      retries: 2,
-      no_mx_lookups: false
+      retries: 2
 
     config :strong4life, :smtp_from_email, smtp_from_email
   end
