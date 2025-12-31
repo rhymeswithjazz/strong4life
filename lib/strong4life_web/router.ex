@@ -28,12 +28,6 @@ defmodule Strong4lifeWeb.Router do
     pipe_through :api
 
     get "/", HealthController, :index
-  end
-
-  # TEMPORARY: Admin endpoint for database reset
-  scope "/admin", Strong4lifeWeb do
-    pipe_through :api
-
     get "/reset-db", AdminController, :reset_database
   end
 
