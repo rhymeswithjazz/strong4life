@@ -135,6 +135,7 @@ if config_env() == :prod do
         versions: [:"tlsv1.2", :"tlsv1.3"],
         cacerts: :public_key.cacerts_get(),
         depth: 10,
+        server_name_indication: String.to_charlist(smtp_host),
         customize_hostname_check: [
           match_fun: :public_key.pkix_verify_hostname_match_fun(:https)
         ]
