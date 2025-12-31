@@ -120,7 +120,7 @@ defmodule Strong4life.Workouts do
   """
   def get_session!(id) do
     WorkoutSession
-    |> preload([:workout_template, workout_sets: :exercise])
+    |> preload(workout_template: [workout_template_exercises: :exercise], workout_sets: :exercise)
     |> Repo.get!(id)
   end
 
