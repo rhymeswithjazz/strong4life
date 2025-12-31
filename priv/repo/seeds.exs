@@ -149,7 +149,7 @@ workout_a_exercises = [
   {"Barbell Squat", 1, 3, 5},
   {"Barbell Bench Press", 2, 3, 5},
   {"Barbell Row", 3, 3, 8},
-  {"Face Pulls", 4, 3, 15}
+  {"Barbell Curls", 4, 3, 10}
 ]
 
 workout_b_exercises = [
@@ -168,7 +168,7 @@ workout_a =
         |> WorkoutTemplate.changeset(%{
           name: "Workout A",
           description:
-            "Full body workout focusing on Squat, Bench Press, and Rows. Include Face Pulls for shoulder health."
+            "Full body workout focusing on Squat, Bench Press, and Rows. Include Barbell Curls for arm development."
         })
         |> Repo.insert()
 
