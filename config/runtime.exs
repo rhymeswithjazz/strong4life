@@ -130,6 +130,11 @@ if config_env() == :prod do
       password: smtp_password,
       ssl: ssl_config,
       tls: tls_config,
+      tls_options: [
+        verify: :verify_peer,
+        versions: [:"tlsv1.2", :"tlsv1.3"],
+        cacerts: :public_key.cacerts_get()
+      ],
       auth: :always,
       retries: 2
 
