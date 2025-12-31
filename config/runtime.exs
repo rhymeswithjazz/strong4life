@@ -108,16 +108,36 @@ if config_env() == :prod do
   smtp_from_email = System.get_env("SMTP_FROM_EMAIL") || "noreply@#{host}"
 
   if smtp_host && smtp_username && smtp_password do
+    # Port 465 uses SSL, port 587 uses STARTTLS
+    {ssl_config, tls_config} =
+      if smtp_port == 465 do
+        {true, :never}
+      else
+        {false, :always}
+      end
+
+    IO.puts("SMTP Configuration:")
+    IO.puts("  Host: #{smtp_host}")
+    IO.puts("  Port: #{smtp_port}")
+    IO.puts("  Username: #{smtp_username}")
+    IO.puts("  SSL: #{ssl_config}, TLS: #{tls_config}")
+
     config :strong4life, Strong4life.Mailer,
       adapter: Swoosh.Adapters.SMTP,
       relay: smtp_host,
       port: smtp_port,
       username: smtp_username,
       password: smtp_password,
-      tls: :always,
+      ssl: ssl_config,
+      tls: tls_config,
       auth: :always,
       retries: 2
 
     config :strong4life, :smtp_from_email, smtp_from_email
+  else
+    IO.puts("SMTP Configuration SKIPPED - missing environment variables:")
+    IO.puts("  SMTP_HOST: #{if smtp_host, do: "SET", else: "MISSING"}")
+    IO.puts("  SMTP_USERNAME: #{if smtp_username, do: "SET", else: "MISSING"}")
+    IO.puts("  SMTP_PASSWORD: #{if smtp_password, do: "SET", else: "MISSING"}")
   end
 end
