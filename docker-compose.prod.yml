@@ -6,6 +6,7 @@ services:
     container_name: strong4life_app
     ports:
       - "4000:4000"
+    user: "1026:100"
     environment:
       - DATABASE_URL=ecto://postgres:${DB_PASSWORD}@db/strong4life
       - SECRET_KEY_BASE=${SECRET_KEY_BASE}
