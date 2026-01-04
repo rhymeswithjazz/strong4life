@@ -209,44 +209,40 @@
         <input type="hidden" name="action" value="update_weight_unit" />
 
         <div class="space-y-3">
-          <label class="flex items-center p-4 bg-slate-700/30 rounded-xl border-2 border-slate-600 cursor-pointer transition-all hover:bg-slate-700/50 has-[:checked]:border-purple-500 has-[:checked]:bg-purple-500/10">
+          <label class="group flex items-center p-4 bg-slate-700/30 rounded-xl border-2 border-slate-600 cursor-pointer transition-all hover:bg-slate-700/50 has-[:checked]:border-purple-500 has-[:checked]:bg-purple-500/10">
             <input
               type="radio"
               name="user[weight_unit]"
               value="lbs"
               checked={f[:weight_unit].value == "lbs"}
-              class="peer sr-only"
+              class="sr-only"
             />
-            <div class="flex items-center justify-between w-full">
-              <div class="flex items-center gap-3">
-                <div class="w-5 h-5 rounded-full border-2 border-slate-500 peer-checked:border-purple-500 peer-checked:bg-purple-500 flex items-center justify-center">
-                  <div class="w-2 h-2 rounded-full bg-white opacity-0 peer-checked:opacity-100"></div>
-                </div>
-                <div>
-                  <div class="text-white font-medium">Pounds (lbs)</div>
-                  <div class="text-slate-400 text-sm">Standard US weight units</div>
-                </div>
+            <div class="flex items-center gap-3 w-full">
+              <div class="relative w-5 h-5 rounded-full border-2 border-slate-500 group-has-[:checked]:border-purple-500 group-has-[:checked]:bg-purple-500 flex items-center justify-center transition-all">
+                <div class="w-2 h-2 rounded-full bg-white opacity-0 group-has-[:checked]:opacity-100 transition-opacity"></div>
+              </div>
+              <div>
+                <div class="text-white font-medium">Pounds (lbs)</div>
+                <div class="text-slate-400 text-sm">Standard US weight units</div>
               </div>
             </div>
           </label>
 
-          <label class="flex items-center p-4 bg-slate-700/30 rounded-xl border-2 border-slate-600 cursor-pointer transition-all hover:bg-slate-700/50 has-[:checked]:border-purple-500 has-[:checked]:bg-purple-500/10">
+          <label class="group flex items-center p-4 bg-slate-700/30 rounded-xl border-2 border-slate-600 cursor-pointer transition-all hover:bg-slate-700/50 has-[:checked]:border-purple-500 has-[:checked]:bg-purple-500/10">
             <input
               type="radio"
               name="user[weight_unit]"
               value="kg"
               checked={f[:weight_unit].value == "kg"}
-              class="peer sr-only"
+              class="sr-only"
             />
-            <div class="flex items-center justify-between w-full">
-              <div class="flex items-center gap-3">
-                <div class="w-5 h-5 rounded-full border-2 border-slate-500 peer-checked:border-purple-500 peer-checked:bg-purple-500 flex items-center justify-center">
-                  <div class="w-2 h-2 rounded-full bg-white opacity-0 peer-checked:opacity-100"></div>
-                </div>
-                <div>
-                  <div class="text-white font-medium">Kilograms (kg)</div>
-                  <div class="text-slate-400 text-sm">Metric weight units</div>
-                </div>
+            <div class="flex items-center gap-3 w-full">
+              <div class="relative w-5 h-5 rounded-full border-2 border-slate-500 group-has-[:checked]:border-purple-500 group-has-[:checked]:bg-purple-500 flex items-center justify-center transition-all">
+                <div class="w-2 h-2 rounded-full bg-white opacity-0 group-has-[:checked]:opacity-100 transition-opacity"></div>
+              </div>
+              <div>
+                <div class="text-white font-medium">Kilograms (kg)</div>
+                <div class="text-slate-400 text-sm">Metric weight units</div>
               </div>
             </div>
           </label>
