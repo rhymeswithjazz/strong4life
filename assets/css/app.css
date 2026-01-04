@@ -103,3 +103,16 @@
 [data-phx-session], [data-phx-teleported-src] { display: contents }
 
 /* This file is for your main application CSS */
+
+/* Stronk Branding */
+.stronk-logo {
+  font-family: 'Barlow', system-ui, -apple-system, sans-serif;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.stronk-heading {
+  font-family: 'Barlow', system-ui, -apple-system, sans-serif;
+  font-weight: 800;
+}

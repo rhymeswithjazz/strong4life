@@ -1,7 +1,7 @@
 {
-  "name": "Strong4Life",
-  "short_name": "Strong4Life",
-  "description": "Track your strength training workouts with the Strong4Life 3-day barbell program",
+  "name": "Stronk",
+  "short_name": "Stronk",
+  "description": "Track your strength training workouts and get stronk with progressive overload",
   "start_url": "/dashboard",
   "display": "standalone",
   "background_color": "#0f172a",

@@ -11,7 +11,7 @@ defmodule Strong4life.Accounts.UserNotifier do
     email =
       new()
       |> to(recipient)
-      |> from({"Strong4Life", from_email})
+      |> from({"Stronk", from_email})
       |> subject(subject)
       |> text_body(body)
 

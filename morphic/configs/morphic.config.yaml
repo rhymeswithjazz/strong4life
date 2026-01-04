@@ -1,0 +1,83 @@
+# Morphic System Configuration - Strong4Life
+
+system:
+  name: "Strong4Life"
+  version: "1.0.0"
+  location: "./morphic"
+  created: "2026-01-03"
+
+behavior:
+  auto_cleanup: true              # Run /cleanup after major operations
+  auto_commit: true               # Auto-commit successful updates
+  test_after_each: true           # Test after each significant change
+  verbose: false                  # Verbose logging
+
+commands:
+  default_strategy: "balanced"    # conservative | balanced | aggressive
+  allow_morphing: true            # Allow inline command morphing
+  require_confirmation:
+    - "/deploy environment=production"
+    - "/push-all"
+    - "/update-deps type=major"
+
+context:
+  always_load:                    # Always load these on /prime-agent
+    - "README.md"
+    - "morphic/AGENT.md"
+    - "morphic/context/system/overview.md"
+    - "CLAUDE.md"                 # Project CLAUDE.md
+    - "~/.claude/CLAUDE.md"       # Global CLAUDE.md
+
+  load_on_demand:                 # Load when relevant
+    - "morphic/context/activity/"
+    - "morphic/context/project/"
+
+progress:
+  log_file: "morphic/progress/progress_log.md"
+  tasks_file: "morphic/progress/current_tasks.md"
+  auto_archive_after_days: 90    # Archive old logs
+
+cleanup:
+  frequency: "after_major_work"   # never | after_major_work | daily | weekly
+  checks:
+    - documentation_sync
+    - reference_validation
+    - progress_tracking
+    - context_staleness
+
+evolution:
+  frequency: "weekly"              # never | weekly | monthly
+  auto_apply_low_risk: false      # Auto-apply low-risk improvements
+  create_backup: true             # Backup before evolution
+
+integrations:
+  git:
+    auto_commit_granular: true
+    commit_message_template: |
+      {{type}}: {{description}}
+
+      {{details}}
+
+      🤖 Generated with {{command}} command
+
+  notifications:
+    slack_webhook: ""              # Optional Slack notifications
+    email: ""                      # Optional email notifications
+
+project:
+  type: "elixir"                   # Elixir/Phoenix project
+  package_manager: "mix"           # Elixir build tool
+  framework: "phoenix"             # Phoenix Framework with LiveView
+  test_command: "mix test"         # Test runner
+  build_command: "mix compile"     # Build command
+  format_command: "mix format"     # Code formatter
+  deploy_method: "docker"          # Docker deployment via GitHub Actions
+
+# Strong4Life-specific settings
+strong4life:
+  authentication: "scope-based"    # Use current_scope, not current_user
+  ui_framework: "liveview"         # Phoenix LiveView (no JS framework)
+  styling: "tailwind"              # Tailwind CSS v4
+  database: "postgresql"           # PostgreSQL 16
+  deployment_target: "synology"    # Synology NAS via Portainer
+  http_client: "req"               # Req library (not httpoison/tesla)

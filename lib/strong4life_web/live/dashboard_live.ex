@@ -64,8 +64,10 @@ defmodule Strong4lifeWeb.DashboardLive do
       <div class="max-w-lg mx-auto px-4 py-8">
         <!-- Header -->
         <header class="text-center mb-8">
-          <h1 class="text-3xl font-bold text-white mb-2">Strong4Life</h1>
-          <p class="text-slate-400">Your strength training companion</p>
+          <div class="flex justify-center mb-4">
+            <img src={~p"/images/stronk-logo.svg"} alt="Stronk" class="h-20 md:h-24" />
+          </div>
+          <p class="text-slate-300 text-lg">Get stronk with progressive overload</p>
         </header>
         
     <!-- Stats Cards -->

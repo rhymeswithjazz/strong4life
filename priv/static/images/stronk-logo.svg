@@ -1,0 +1,20 @@
+<svg width="300" height="120" viewBox="0 0 300 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Barbell Icon - Centered on top -->
+  <g id="barbell" transform="translate(95, 10)">
+    <!-- Left weight plate -->
+    <rect x="0" y="8" width="14" height="28" rx="2" fill="#34d399"/>
+    <!-- Left handle connection -->
+    <rect x="14" y="14" width="10" height="16" fill="#10b981"/>
+    <!-- Bar -->
+    <rect x="24" y="18" width="52" height="8" rx="1" fill="#6ee7b7"/>
+    <!-- Right handle connection -->
+    <rect x="76" y="14" width="10" height="16" fill="#10b981"/>
+    <!-- Right weight plate -->
+    <rect x="86" y="8" width="14" height="28" rx="2" fill="#34d399"/>
+  </g>
+
+  <!-- STRONK Text - White for contrast, centered, with more spacing from barbell -->
+  <text x="150" y="100" font-family="Barlow, system-ui, -apple-system, sans-serif" font-weight="900" font-size="48" fill="#ffffff" letter-spacing="3" text-anchor="middle">
+    STRONK
+  </text>
+</svg>

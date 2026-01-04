@@ -1,0 +1,50 @@
+# Morphic System .gitignore
+
+# Temporary files
+*.backup
+*.tmp
+.DS_Store
+
+# Logs
+*.log
+logs/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Elixir/Phoenix specific
+/_build
+/cover
+/deps
+/doc
+/.fetch
+erl_crash.dump
+*.ez
+*.beam
+/config/*.secret.exs
+.elixir_ls/
+
+# Phoenix specific
+/priv/static/
+
+# Test coverage
+cover/
+*.cover
+
+# Archives and backups
+*.backup.*
+backups/
+
+# Keep template directories
+!templates/**/.gitkeep
+
+# Keep empty directories
+!*/.gitkeep
