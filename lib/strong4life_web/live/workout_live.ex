@@ -150,7 +150,8 @@ defmodule Strong4lifeWeb.WorkoutLive do
 
   @impl true
   def handle_event("skip_rest", _params, socket) do
-    {:noreply, assign(socket, rest_timer: nil, rest_seconds: 0)}
+    socket = assign(socket, rest_timer: nil, rest_seconds: 0)
+    {:noreply, maybe_advance_to_next_exercise(socket)}
   end
 
   @impl true
@@ -249,11 +250,12 @@ defmodule Strong4lifeWeb.WorkoutLive do
       new_seconds = socket.assigns.rest_seconds - 1
 
       if new_seconds <= 0 do
-        # Rest complete - trigger audio and vibration notification
+        # Rest complete - trigger audio and vibration notification, then maybe advance
         {:noreply,
          socket
          |> assign(rest_timer: nil, rest_seconds: 0)
-         |> push_event("rest_timer_complete", %{})}
+         |> push_event("rest_timer_complete", %{})
+         |> maybe_advance_to_next_exercise()}
       else
         {:noreply, assign(socket, rest_seconds: new_seconds)}
       end
@@ -273,6 +275,26 @@ defmodule Strong4lifeWeb.WorkoutLive do
       rest_seconds: rest_time,
       rest_initial_duration: rest_time
     )
+  end
+
+  defp maybe_advance_to_next_exercise(socket) do
+    current_index = socket.assigns.current_exercise_index
+    current_exercise = Enum.at(socket.assigns.exercises, current_index)
+
+    # Check if all sets for current exercise are completed
+    all_sets_complete? =
+      current_exercise.sets
+      |> Enum.all?(fn set -> set.completed end)
+
+    # If all sets complete and there's a next exercise, advance
+    next_index = current_index + 1
+    has_next_exercise? = next_index < length(socket.assigns.exercises)
+
+    if all_sets_complete? && has_next_exercise? do
+      assign(socket, current_exercise_index: next_index)
+    else
+      socket
+    end
   end
 
   defp parse_decimal(""), do: nil
