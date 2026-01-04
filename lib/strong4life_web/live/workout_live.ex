@@ -514,6 +514,7 @@ defmodule Strong4lifeWeb.WorkoutLive do
                   session_id={@session.id}
                   suggestion={current_exercise.suggestion}
                   target_reps={current_exercise.wte.target_reps}
+                  weight_unit={@weight_unit}
                 />
               <% end %>
             </div>
@@ -613,6 +614,7 @@ defmodule Strong4lifeWeb.WorkoutLive do
   attr :session_id, :string, required: true
   attr :suggestion, :map
   attr :target_reps, :integer, required: true
+  attr :weight_unit, :string, required: true
 
   defp set_row(assigns) do
     # Extract suggested weight from suggestion map
