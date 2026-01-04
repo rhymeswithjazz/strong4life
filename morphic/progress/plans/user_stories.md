@@ -295,7 +295,15 @@ User stories for the Stronk workout tracking application.
 - Audio/vibration notification when timer completes
 - User can skip or reset timer
 
-**Status:** ❌ Not Implemented
+**Status:** ✅ Implemented
+
+**Implementation Notes:**
+- In-workout duration picker (1:00, 1:30, 2:00, 3:00)
+- Reset button to restore initial duration
+- Audio beep (800Hz, 0.5s) on completion
+- Vibration pattern (200-100-200ms) for mobile
+- Auto-advance to next exercise when all sets complete
+- Custom duration persists throughout session
 
 ---
 
@@ -346,7 +354,7 @@ User stories for the Stronk workout tracking application.
 - [x] US-010: Track Progress Charts
 - [x] US-013: Edit Logged Set
 - [x] US-014: Delete Logged Set
-- [ ] US-018: Add Rest Timer
+- [x] US-018: Add Rest Timer
 
 ### P2 - Medium Priority
 - [ ] US-012: PWA Installation (offline support)
