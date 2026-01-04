@@ -1,6 +1,7 @@
 defmodule Strong4lifeWeb.WorkoutLive do
   use Strong4lifeWeb, :live_view
 
+  alias Strong4life.Repo
   alias Strong4life.Workouts
 
   @impl true
@@ -101,11 +102,22 @@ defmodule Strong4lifeWeb.WorkoutLive do
     } = params
 
     session = socket.assigns.session
+    set_number_int = String.to_integer(set_number)
+
+    # Check if set already exists to determine flash message
+    existing_set =
+      Repo.get_by(Workouts.WorkoutSet,
+        workout_session_id: session.id,
+        exercise_id: exercise_id,
+        set_number: set_number_int
+      )
+
+    is_update = existing_set != nil
 
     attrs = %{
       workout_session_id: session.id,
       exercise_id: exercise_id,
-      set_number: String.to_integer(set_number),
+      set_number: set_number_int,
       weight: parse_decimal(weight),
       reps: parse_integer(reps),
       rpe: parse_integer(rpe)
@@ -118,9 +130,12 @@ defmodule Strong4lifeWeb.WorkoutLive do
         user = socket.assigns.current_scope.user
         exercises = get_exercises_with_progress(socket.assigns.template, updated_session, user.id)
 
+        flash_message = if is_update, do: "Set updated!", else: "Set logged!"
+
         # Start rest timer
         {:noreply,
          socket
+         |> put_flash(:info, flash_message)
          |> assign(session: updated_session, exercises: exercises)
          |> start_rest_timer()}
 

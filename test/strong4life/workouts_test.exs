@@ -761,4 +761,227 @@ defmodule Strong4life.WorkoutsTest do
       assert history == []
     end
   end
+
+  describe "update_set/2" do
+    setup do
+      user = user_fixture()
+
+      exercise_name = "Test Exercise #{:rand.uniform(1_000_000)}"
+
+      {:ok, exercise} =
+        %Exercise{}
+        |> Exercise.changeset(%{
+          name: exercise_name,
+          category: "compound",
+          is_accessory: false,
+          instructions: "Test instructions"
+        })
+        |> Repo.insert()
+
+      template_name = "Test Template #{:rand.uniform(1_000_000)}"
+
+      {:ok, template} =
+        %WorkoutTemplate{}
+        |> WorkoutTemplate.changeset(%{name: template_name})
+        |> Repo.insert()
+
+      {:ok, session} =
+        %WorkoutSession{}
+        |> WorkoutSession.changeset(%{
+          user_id: user.id,
+          workout_template_id: template.id,
+          started_at: DateTime.utc_now() |> DateTime.truncate(:second)
+        })
+        |> Repo.insert()
+
+      # Create an initial set
+      {:ok, set} =
+        %WorkoutSet{}
+        |> WorkoutSet.changeset(%{
+          workout_session_id: session.id,
+          exercise_id: exercise.id,
+          set_number: 1,
+          weight: Decimal.new("135"),
+          reps: 5,
+          rpe: 8
+        })
+        |> Repo.insert()
+
+      %{user: user, exercise: exercise, session: session, set: set}
+    end
+
+    test "successfully updates weight", %{set: set} do
+      {:ok, updated_set} = Workouts.update_set(set, %{weight: Decimal.new("140")})
+
+      assert Decimal.eq?(updated_set.weight, Decimal.new("140"))
+      assert updated_set.reps == 5
+      assert updated_set.rpe == 8
+    end
+
+    test "successfully updates reps", %{set: set} do
+      {:ok, updated_set} = Workouts.update_set(set, %{reps: 6})
+
+      assert Decimal.eq?(updated_set.weight, Decimal.new("135"))
+      assert updated_set.reps == 6
+      assert updated_set.rpe == 8
+    end
+
+    test "successfully updates RPE", %{set: set} do
+      {:ok, updated_set} = Workouts.update_set(set, %{rpe: 9})
+
+      assert Decimal.eq?(updated_set.weight, Decimal.new("135"))
+      assert updated_set.reps == 5
+      assert updated_set.rpe == 9
+    end
+
+    test "successfully updates multiple fields", %{set: set} do
+      {:ok, updated_set} =
+        Workouts.update_set(set, %{
+          weight: Decimal.new("145"),
+          reps: 6,
+          rpe: 9
+        })
+
+      assert Decimal.eq?(updated_set.weight, Decimal.new("145"))
+      assert updated_set.reps == 6
+      assert updated_set.rpe == 9
+    end
+
+    test "persists changes to database", %{set: set} do
+      {:ok, _updated} =
+        Workouts.update_set(set, %{
+          weight: Decimal.new("150"),
+          reps: 4
+        })
+
+      # Verify changes are in database
+      db_set = Repo.get!(WorkoutSet, set.id)
+      assert Decimal.eq?(db_set.weight, Decimal.new("150"))
+      assert db_set.reps == 4
+    end
+
+    test "can clear RPE by setting to nil", %{set: set} do
+      {:ok, updated_set} = Workouts.update_set(set, %{rpe: nil})
+
+      assert updated_set.rpe == nil
+    end
+  end
+
+  describe "upsert_set/1" do
+    setup do
+      user = user_fixture()
+
+      exercise_name = "Test Exercise #{:rand.uniform(1_000_000)}"
+
+      {:ok, exercise} =
+        %Exercise{}
+        |> Exercise.changeset(%{
+          name: exercise_name,
+          category: "compound",
+          is_accessory: false,
+          instructions: "Test instructions"
+        })
+        |> Repo.insert()
+
+      template_name = "Test Template #{:rand.uniform(1_000_000)}"
+
+      {:ok, template} =
+        %WorkoutTemplate{}
+        |> WorkoutTemplate.changeset(%{name: template_name})
+        |> Repo.insert()
+
+      {:ok, session} =
+        %WorkoutSession{}
+        |> WorkoutSession.changeset(%{
+          user_id: user.id,
+          workout_template_id: template.id,
+          started_at: DateTime.utc_now() |> DateTime.truncate(:second)
+        })
+        |> Repo.insert()
+
+      %{user: user, exercise: exercise, session: session}
+    end
+
+    test "creates new set when it doesn't exist", %{session: session, exercise: exercise} do
+      attrs = %{
+        workout_session_id: session.id,
+        exercise_id: exercise.id,
+        set_number: 1,
+        weight: Decimal.new("135"),
+        reps: 5,
+        rpe: 8
+      }
+
+      {:ok, set} = Workouts.upsert_set(attrs)
+
+      assert Decimal.eq?(set.weight, Decimal.new("135"))
+      assert set.reps == 5
+      assert set.rpe == 8
+      assert set.set_number == 1
+    end
+
+    test "updates existing set when it already exists", %{session: session, exercise: exercise} do
+      # Create initial set
+      attrs = %{
+        workout_session_id: session.id,
+        exercise_id: exercise.id,
+        set_number: 1,
+        weight: Decimal.new("135"),
+        reps: 5,
+        rpe: 8
+      }
+
+      {:ok, initial_set} = Workouts.upsert_set(attrs)
+
+      # Upsert with new values
+      updated_attrs = %{
+        workout_session_id: session.id,
+        exercise_id: exercise.id,
+        set_number: 1,
+        weight: Decimal.new("140"),
+        reps: 6,
+        rpe: 9
+      }
+
+      {:ok, updated_set} = Workouts.upsert_set(updated_attrs)
+
+      # Should be the same set (same ID)
+      assert updated_set.id == initial_set.id
+
+      # But with updated values
+      assert Decimal.eq?(updated_set.weight, Decimal.new("140"))
+      assert updated_set.reps == 6
+      assert updated_set.rpe == 9
+    end
+
+    test "creates multiple sets with different set_numbers", %{
+      session: session,
+      exercise: exercise
+    } do
+      # Create set 1
+      {:ok, set1} =
+        Workouts.upsert_set(%{
+          workout_session_id: session.id,
+          exercise_id: exercise.id,
+          set_number: 1,
+          weight: Decimal.new("135"),
+          reps: 5
+        })
+
+      # Create set 2
+      {:ok, set2} =
+        Workouts.upsert_set(%{
+          workout_session_id: session.id,
+          exercise_id: exercise.id,
+          set_number: 2,
+          weight: Decimal.new("135"),
+          reps: 5
+        })
+
+      # Should be different sets
+      assert set1.id != set2.id
+      assert set1.set_number == 1
+      assert set2.set_number == 2
+    end
+  end
 end

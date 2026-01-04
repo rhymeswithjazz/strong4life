@@ -214,7 +214,7 @@ User stories for the Stronk workout tracking application.
 - User sees confirmation of update
 - Edit is only available during active workout
 
-**Status:** ❌ Not Implemented
+**Status:** ✅ Implemented
 
 ---
 
@@ -344,7 +344,7 @@ User stories for the Stronk workout tracking application.
 ### P1 - High Priority
 - [x] US-006: View Suggested Weights (improve with progressive overload)
 - [x] US-010: Track Progress Charts
-- [ ] US-013: Edit Logged Set
+- [x] US-013: Edit Logged Set
 - [ ] US-014: Delete Logged Set
 - [ ] US-018: Add Rest Timer
 
