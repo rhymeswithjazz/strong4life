@@ -239,6 +239,15 @@ defmodule Strong4life.Workouts do
   end
 
   @doc """
+  Updates notes for a workout session.
+  """
+  def update_session_notes(session, attrs) do
+    session
+    |> WorkoutSession.notes_changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
   Gets the current in-progress session for a user, if any.
   """
   def get_in_progress_session(user_id) do

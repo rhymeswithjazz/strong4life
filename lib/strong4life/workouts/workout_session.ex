@@ -18,6 +18,14 @@ defmodule Strong4life.Workouts.WorkoutSession do
     timestamps(type: :utc_datetime)
   end
 
+  @doc """
+  Changeset for updating workout notes.
+  """
+  def notes_changeset(workout_session, attrs) do
+    workout_session
+    |> cast(attrs, [:notes])
+  end
+
   @doc false
   def changeset(workout_session, attrs) do
     workout_session

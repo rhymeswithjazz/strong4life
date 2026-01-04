@@ -14,7 +14,8 @@ defmodule Strong4lifeWeb.HistoryLive do
        page_title: "Workout History",
        sessions: sessions,
        selected_session: nil,
-       weight_unit: user.weight_unit
+       weight_unit: user.weight_unit,
+       editing_notes: false
      )}
   end
 
@@ -37,7 +38,27 @@ defmodule Strong4lifeWeb.HistoryLive do
 
   @impl true
   def handle_params(_params, _uri, socket) do
-    {:noreply, assign(socket, selected_session: nil, exercises_with_sets: [])}
+    {:noreply,
+     assign(socket, selected_session: nil, exercises_with_sets: [], editing_notes: false)}
+  end
+
+  @impl true
+  def handle_event("toggle_edit_notes", _params, socket) do
+    {:noreply, assign(socket, editing_notes: !socket.assigns.editing_notes)}
+  end
+
+  @impl true
+  def handle_event("save_notes", %{"notes" => notes}, socket) do
+    case Workouts.update_session_notes(socket.assigns.selected_session, %{notes: notes}) do
+      {:ok, updated_session} ->
+        {:noreply,
+         socket
+         |> assign(selected_session: updated_session, editing_notes: false)
+         |> put_flash(:info, "Workout notes saved")}
+
+      {:error, _changeset} ->
+        {:noreply, put_flash(socket, :error, "Failed to save notes")}
+    end
   end
 
   @impl true
@@ -104,12 +125,37 @@ defmodule Strong4lifeWeb.HistoryLive do
                   </span>
                 <% end %>
               </div>
-              <%= if @selected_session.notes do %>
-                <div class="mt-3 pt-3 border-t border-slate-700">
-                  <div class="text-slate-500 text-xs mb-1">Notes</div>
-                  <div class="text-slate-300 text-sm">{@selected_session.notes}</div>
+              <div class="mt-3 pt-3 border-t border-slate-700">
+                <div class="flex items-center justify-between mb-1">
+                  <div class="text-slate-500 text-xs">Notes</div>
+                  <button
+                    phx-click="toggle_edit_notes"
+                    class="text-emerald-400 hover:text-emerald-300 text-xs"
+                  >
+                    {if @editing_notes, do: "Cancel", else: "Edit"}
+                  </button>
                 </div>
-              <% end %>
+                <%= if @editing_notes do %>
+                  <form phx-submit="save_notes" class="mt-2">
+                    <textarea
+                      name="notes"
+                      rows="3"
+                      class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white text-sm placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 mb-2"
+                      placeholder="Add notes about this workout..."
+                    >{@selected_session.notes}</textarea>
+                    <button
+                      type="submit"
+                      class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-medium py-2 rounded-lg text-sm"
+                    >
+                      Save Notes
+                    </button>
+                  </form>
+                <% else %>
+                  <div class="text-slate-300 text-sm">
+                    {@selected_session.notes || "No notes yet"}
+                  </div>
+                <% end %>
+              </div>
             </div>
             
     <!-- Exercises -->
