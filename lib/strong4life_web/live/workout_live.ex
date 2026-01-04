@@ -31,7 +31,8 @@ defmodule Strong4lifeWeb.WorkoutLive do
          current_exercise_index: 0,
          rest_timer: nil,
          rest_seconds: 0,
-         show_complete_modal: false
+         show_complete_modal: false,
+         delete_set_id: nil
        )}
     end
   end
@@ -178,6 +179,48 @@ defmodule Strong4lifeWeb.WorkoutLive do
 
       {:error, _changeset} ->
         {:noreply, put_flash(socket, :error, "Failed to complete workout")}
+    end
+  end
+
+  @impl true
+  def handle_event("show_delete_modal", %{"set_id" => set_id}, socket) do
+    {:noreply, assign(socket, delete_set_id: set_id)}
+  end
+
+  @impl true
+  def handle_event("hide_delete_modal", _params, socket) do
+    {:noreply, assign(socket, delete_set_id: nil)}
+  end
+
+  @impl true
+  def handle_event("delete_set", _params, socket) do
+    set_id = socket.assigns.delete_set_id
+
+    if set_id do
+      set = Repo.get!(Workouts.WorkoutSet, set_id)
+
+      case Workouts.delete_set(set) do
+        {:ok, _deleted_set} ->
+          # Reload session to get updated sets
+          updated_session = Workouts.get_session!(socket.assigns.session.id)
+          user = socket.assigns.current_scope.user
+
+          exercises =
+            get_exercises_with_progress(socket.assigns.template, updated_session, user.id)
+
+          {:noreply,
+           socket
+           |> put_flash(:info, "Set deleted")
+           |> assign(session: updated_session, exercises: exercises, delete_set_id: nil)}
+
+        {:error, _changeset} ->
+          {:noreply,
+           socket
+           |> put_flash(:error, "Failed to delete set")
+           |> assign(delete_set_id: nil)}
+      end
+    else
+      {:noreply, socket}
     end
   end
 
@@ -419,6 +462,55 @@ defmodule Strong4lifeWeb.WorkoutLive do
             </div>
           </div>
         <% end %>
+        
+    <!-- Delete Set Modal -->
+        <%= if @delete_set_id do %>
+          <% set_to_delete = Enum.find(@session.workout_sets, &(&1.id == @delete_set_id)) %>
+          <%= if set_to_delete do %>
+            <% exercise =
+              Enum.find(
+                @template.workout_template_exercises,
+                &(&1.exercise_id == set_to_delete.exercise_id)
+              ).exercise %>
+            <div class="fixed inset-0 bg-slate-900/95 backdrop-blur flex items-center justify-center z-50 p-4">
+              <div class="bg-slate-800 rounded-2xl border border-red-900/50 p-6 w-full max-w-md">
+                <h2 class="text-xl font-bold text-red-400 mb-4">Delete Set</h2>
+                <div class="mb-6">
+                  <p class="text-slate-300 mb-4">Are you sure you want to delete this set?</p>
+                  <div class="bg-slate-700/50 rounded-lg p-4 border border-slate-600">
+                    <p class="text-white font-medium mb-2">
+                      {exercise.name} - Set {set_to_delete.set_number}
+                    </p>
+                    <div class="text-slate-400 text-sm space-y-1">
+                      <p>Weight: {set_to_delete.weight} lbs</p>
+                      <p>Reps: {set_to_delete.reps}</p>
+                      <%= if set_to_delete.rpe do %>
+                        <p>RPE: {set_to_delete.rpe}</p>
+                      <% end %>
+                    </div>
+                  </div>
+                  <p class="text-red-400 text-sm mt-4">This action cannot be undone.</p>
+                </div>
+                <div class="flex gap-3">
+                  <button
+                    type="button"
+                    phx-click="hide_delete_modal"
+                    class="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-medium py-3 rounded-xl"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    phx-click="delete_set"
+                    class="flex-1 bg-red-500 hover:bg-red-400 text-white font-bold py-3 rounded-xl"
+                  >
+                    Delete Set
+                  </button>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        <% end %>
       </div>
     </div>
     """
@@ -457,7 +549,25 @@ defmodule Strong4lifeWeb.WorkoutLive do
       <div class="flex items-center justify-between mb-3">
         <span class="text-slate-400 font-medium">Set {@set.set_number}</span>
         <%= if @set.completed do %>
-          <span class="text-emerald-400 text-sm">✓ Logged</span>
+          <div class="flex items-center gap-2">
+            <span class="text-emerald-400 text-sm">✓ Logged</span>
+            <button
+              type="button"
+              phx-click="show_delete_modal"
+              phx-value-set_id={@set.id}
+              class="text-red-400 hover:text-red-300 transition-colors"
+              title="Delete set"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                />
+              </svg>
+            </button>
+          </div>
         <% end %>
       </div>
 

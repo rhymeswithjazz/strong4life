@@ -273,6 +273,13 @@ defmodule Strong4life.Workouts do
   end
 
   @doc """
+  Deletes a workout set.
+  """
+  def delete_set(%WorkoutSet{} = set) do
+    Repo.delete(set)
+  end
+
+  @doc """
   Gets or creates a set for a session/exercise/set_number combination.
   This allows for updating sets as the user progresses through the workout.
   """

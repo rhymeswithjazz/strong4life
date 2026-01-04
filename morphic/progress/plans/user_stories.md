@@ -229,7 +229,7 @@ User stories for the Stronk workout tracking application.
 - Set is removed from workout
 - Delete is only available during active workout
 
-**Status:** ❌ Not Implemented
+**Status:** ✅ Implemented
 
 ---
 
@@ -345,7 +345,7 @@ User stories for the Stronk workout tracking application.
 - [x] US-006: View Suggested Weights (improve with progressive overload)
 - [x] US-010: Track Progress Charts
 - [x] US-013: Edit Logged Set
-- [ ] US-014: Delete Logged Set
+- [x] US-014: Delete Logged Set
 - [ ] US-018: Add Rest Timer
 
 ### P2 - Medium Priority

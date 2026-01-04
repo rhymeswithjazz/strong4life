@@ -984,4 +984,119 @@ defmodule Strong4life.WorkoutsTest do
       assert set2.set_number == 2
     end
   end
+
+  describe "delete_set/1" do
+    setup do
+      user = user_fixture()
+
+      # Create test exercise with unique name
+      exercise_name = "Test Exercise #{:rand.uniform(1_000_000)}"
+
+      {:ok, exercise} =
+        %Exercise{}
+        |> Exercise.changeset(%{
+          name: exercise_name,
+          category: "compound",
+          is_accessory: false,
+          instructions: "Test instructions"
+        })
+        |> Repo.insert()
+
+      # Create workout template with unique name
+      template_name = "Test Template #{:rand.uniform(1_000_000)}"
+
+      {:ok, template} =
+        %WorkoutTemplate{}
+        |> WorkoutTemplate.changeset(%{name: template_name})
+        |> Repo.insert()
+
+      {:ok, session} =
+        Workouts.start_session(user.id, template.id)
+
+      {:ok, set} =
+        Workouts.log_set(%{
+          workout_session_id: session.id,
+          exercise_id: exercise.id,
+          set_number: 1,
+          weight: Decimal.new("135"),
+          reps: 5,
+          rpe: 8
+        })
+
+      %{user: user, exercise: exercise, session: session, set: set}
+    end
+
+    test "successfully deletes a set", %{set: set} do
+      assert {:ok, deleted_set} = Workouts.delete_set(set)
+      assert deleted_set.id == set.id
+
+      # Verify set is actually deleted
+      assert Repo.get(WorkoutSet, set.id) == nil
+    end
+
+    test "returns error when trying to delete non-existent set" do
+      non_existent_set = %WorkoutSet{id: Ecto.UUID.generate()}
+
+      assert_raise Ecto.StaleEntryError, fn ->
+        Workouts.delete_set(non_existent_set)
+      end
+    end
+
+    test "deleting a set does not affect other sets", %{
+      session: session,
+      exercise: exercise,
+      set: set1
+    } do
+      # Create a second set
+      {:ok, set2} =
+        Workouts.log_set(%{
+          workout_session_id: session.id,
+          exercise_id: exercise.id,
+          set_number: 2,
+          weight: Decimal.new("140"),
+          reps: 5
+        })
+
+      # Delete first set
+      {:ok, _deleted} = Workouts.delete_set(set1)
+
+      # Second set should still exist
+      remaining_set = Repo.get(WorkoutSet, set2.id)
+      assert remaining_set != nil
+      assert Decimal.eq?(remaining_set.weight, Decimal.new("140"))
+    end
+
+    test "deleting a set does not affect the session", %{session: session, set: set} do
+      {:ok, _deleted} = Workouts.delete_set(set)
+
+      # Session should still exist
+      remaining_session = Repo.get(WorkoutSession, session.id)
+      assert remaining_session != nil
+      assert remaining_session.id == session.id
+    end
+
+    test "can delete and recreate a set with the same set_number", %{
+      session: session,
+      exercise: exercise,
+      set: set
+    } do
+      # Delete the set
+      {:ok, _deleted} = Workouts.delete_set(set)
+
+      # Create a new set with the same set_number
+      {:ok, new_set} =
+        Workouts.log_set(%{
+          workout_session_id: session.id,
+          exercise_id: exercise.id,
+          set_number: 1,
+          weight: Decimal.new("150"),
+          reps: 6
+        })
+
+      # Should be a different set
+      assert new_set.id != set.id
+      assert Decimal.eq?(new_set.weight, Decimal.new("150"))
+      assert new_set.reps == 6
+    end
+  end
 end
