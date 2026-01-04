@@ -338,6 +338,40 @@ User stories for the Stronk workout tracking application.
 
 ---
 
+### US-021: Expand Accessory Exercise Library
+**As a** user
+**I want to** have access to more pre-defined accessory exercises
+**So that** I can choose from a variety of proven accessory movements
+
+**Acceptance Criteria:**
+- System includes additional accessory exercises (e.g., Lat Pulldowns, Leg Curls, Tricep Extensions, Bicep Curls, Calf Raises, Lateral Raises)
+- Each exercise has proper instructions and muscle group categorization
+- Exercises are marked as accessory vs compound
+- Default sets and reps are appropriate for each exercise type
+- All exercises integrate with existing progressive overload tracking
+
+**Status:** ❌ Not Implemented
+
+---
+
+### US-022: Customize Workout Template Accessories
+**As a** user
+**I want to** choose which accessory exercises are included in Workout A and Workout B
+**So that** I can personalize my program to target my specific goals
+
+**Acceptance Criteria:**
+- User can view and edit their Workout A and Workout B templates
+- User can add/remove accessory exercises from each workout
+- Main compound lifts (Squat, Bench, Deadlift, OHP, Row) remain required
+- User can set custom target sets/reps for each exercise in their template
+- User can reorder exercises within a workout
+- Changes to templates only affect future workouts (not in-progress sessions)
+- Template changes persist across sessions
+
+**Status:** ❌ Not Implemented
+
+---
+
 ## Priority Matrix
 
 ### P0 - Critical (MVP)
@@ -364,6 +398,8 @@ User stories for the Stronk workout tracking application.
 ### P3 - Low Priority
 - [ ] US-015: Export Workout Data
 - [ ] US-020: Custom Exercises
+- [ ] US-021: Expand Accessory Exercise Library
+- [ ] US-022: Customize Workout Template Accessories
 
 ---
 
