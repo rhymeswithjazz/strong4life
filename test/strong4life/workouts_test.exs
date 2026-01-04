@@ -311,4 +311,241 @@ defmodule Strong4life.WorkoutsTest do
       assert Workouts.get_suggested_weight(user.id, exercise.id) == nil
     end
   end
+
+  describe "complete_session/2" do
+    setup do
+      user = user_fixture()
+
+      # Create test exercise and template
+      exercise_name = "Test Exercise #{:rand.uniform(1_000_000)}"
+
+      {:ok, exercise} =
+        %Exercise{}
+        |> Exercise.changeset(%{
+          name: exercise_name,
+          category: "compound",
+          is_accessory: false,
+          instructions: "Test instructions"
+        })
+        |> Repo.insert()
+
+      template_name = "Test Template #{:rand.uniform(1_000_000)}"
+
+      {:ok, template} =
+        %WorkoutTemplate{}
+        |> WorkoutTemplate.changeset(%{name: template_name})
+        |> Repo.insert()
+
+      # Create in-progress workout session
+      {:ok, session} =
+        %WorkoutSession{}
+        |> WorkoutSession.changeset(%{
+          user_id: user.id,
+          workout_template_id: template.id,
+          started_at: DateTime.utc_now() |> DateTime.truncate(:second)
+        })
+        |> Repo.insert()
+
+      %{user: user, exercise: exercise, template: template, session: session}
+    end
+
+    test "successfully completes a session with timestamp", %{session: session} do
+      assert session.completed_at == nil
+
+      {:ok, completed_session} = Workouts.complete_session(session)
+
+      assert completed_session.completed_at != nil
+      assert %DateTime{} = completed_session.completed_at
+
+      # Verify it's persisted in database
+      db_session = Repo.get!(WorkoutSession, session.id)
+      assert db_session.completed_at != nil
+    end
+
+    test "sets completed_at to current time", %{session: session} do
+      before_completion = DateTime.utc_now() |> DateTime.truncate(:second)
+      {:ok, completed_session} = Workouts.complete_session(session)
+      after_completion = DateTime.utc_now() |> DateTime.truncate(:second)
+
+      assert DateTime.compare(completed_session.completed_at, before_completion) in [:gt, :eq]
+      assert DateTime.compare(completed_session.completed_at, after_completion) in [:lt, :eq]
+    end
+
+    test "saves optional notes with session", %{session: session} do
+      notes = "Great workout! Felt strong today."
+
+      {:ok, completed_session} = Workouts.complete_session(session, %{notes: notes})
+
+      assert completed_session.notes == notes
+
+      # Verify notes are persisted
+      db_session = Repo.get!(WorkoutSession, session.id)
+      assert db_session.notes == notes
+    end
+
+    test "completes session without notes", %{session: session} do
+      {:ok, completed_session} = Workouts.complete_session(session)
+
+      assert completed_session.notes == nil
+    end
+
+    test "truncates timestamp to seconds", %{session: session} do
+      {:ok, completed_session} = Workouts.complete_session(session)
+
+      # Verify microseconds are 0 (truncated to seconds)
+      assert completed_session.completed_at.microsecond == {0, 0}
+    end
+
+    test "completed session appears in user history", %{user: user, session: session} do
+      {:ok, _completed} = Workouts.complete_session(session)
+
+      sessions = Workouts.list_user_sessions(user.id)
+
+      assert length(sessions) == 1
+      assert hd(sessions).id == session.id
+      assert hd(sessions).completed_at != nil
+    end
+
+    test "completed session counts toward user stats", %{user: user, session: session} do
+      assert Workouts.count_completed_sessions(user.id) == 0
+
+      {:ok, _completed} = Workouts.complete_session(session)
+
+      assert Workouts.count_completed_sessions(user.id) == 1
+    end
+
+    test "can complete session that already has sets logged", %{
+      session: session,
+      exercise: exercise
+    } do
+      # Log some sets first
+      {:ok, _set} =
+        %WorkoutSet{}
+        |> WorkoutSet.changeset(%{
+          workout_session_id: session.id,
+          exercise_id: exercise.id,
+          set_number: 1,
+          weight: Decimal.new("135"),
+          reps: 5,
+          rpe: 8
+        })
+        |> Repo.insert()
+
+      {:ok, completed_session} = Workouts.complete_session(session)
+
+      assert completed_session.completed_at != nil
+
+      # Verify sets are still associated
+      sets = Repo.preload(completed_session, :workout_sets).workout_sets
+      assert length(sets) == 1
+    end
+
+    test "completed session is available for weight suggestions", %{
+      user: user,
+      session: session,
+      exercise: exercise,
+      template: template
+    } do
+      # Link exercise to template
+      {:ok, _wte} =
+        %WorkoutTemplateExercise{}
+        |> WorkoutTemplateExercise.changeset(%{
+          workout_template_id: template.id,
+          exercise_id: exercise.id,
+          order: 1,
+          target_sets: 3,
+          target_reps: 5
+        })
+        |> Repo.insert()
+
+      # Log sets
+      for set_num <- 1..3 do
+        {:ok, _set} =
+          %WorkoutSet{}
+          |> WorkoutSet.changeset(%{
+            workout_session_id: session.id,
+            exercise_id: exercise.id,
+            set_number: set_num,
+            weight: Decimal.new("135"),
+            reps: 5
+          })
+          |> Repo.insert()
+      end
+
+      # Should return nil before completion
+      assert Workouts.get_suggested_weight(user.id, exercise.id) == nil
+
+      # Complete the session
+      {:ok, _completed} = Workouts.complete_session(session)
+
+      # Should now return suggestion
+      suggestion = Workouts.get_suggested_weight(user.id, exercise.id)
+      assert suggestion != nil
+      assert Decimal.eq?(suggestion.last_weight, Decimal.new("135"))
+    end
+  end
+
+  describe "WorkoutSession.complete_changeset/2" do
+    test "sets completed_at timestamp automatically" do
+      session = %WorkoutSession{started_at: DateTime.utc_now()}
+
+      changeset = WorkoutSession.complete_changeset(session)
+
+      assert changeset.valid?
+      assert changeset.changes.completed_at != nil
+      assert %DateTime{} = changeset.changes.completed_at
+    end
+
+    test "accepts notes parameter" do
+      session = %WorkoutSession{started_at: DateTime.utc_now()}
+      notes = "Excellent session!"
+
+      changeset = WorkoutSession.complete_changeset(session, %{notes: notes})
+
+      assert changeset.valid?
+      assert changeset.changes.notes == notes
+    end
+
+    test "does not require notes parameter" do
+      session = %WorkoutSession{started_at: DateTime.utc_now()}
+
+      changeset = WorkoutSession.complete_changeset(session, %{})
+
+      assert changeset.valid?
+      assert changeset.changes[:notes] == nil
+    end
+
+    test "truncates completed_at to seconds" do
+      session = %WorkoutSession{started_at: DateTime.utc_now()}
+
+      changeset = WorkoutSession.complete_changeset(session)
+
+      completed_at = changeset.changes.completed_at
+      assert completed_at.microsecond == {0, 0}
+    end
+
+    test "ignores other fields in attrs" do
+      session = %WorkoutSession{
+        started_at: DateTime.utc_now(),
+        user_id: 1,
+        workout_template_id: Ecto.UUID.generate()
+      }
+
+      # Try to change fields that shouldn't be modifiable
+      changeset =
+        WorkoutSession.complete_changeset(session, %{
+          user_id: 999,
+          workout_template_id: Ecto.UUID.generate(),
+          started_at: DateTime.add(DateTime.utc_now(), -3600)
+        })
+
+      assert changeset.valid?
+      # These fields should not be in changes
+      assert changeset.changes[:user_id] == nil
+      assert changeset.changes[:workout_template_id] == nil
+      assert changeset.changes[:started_at] == nil
+      # Only completed_at should be set
+      assert changeset.changes.completed_at != nil
+    end
+  end
 end
