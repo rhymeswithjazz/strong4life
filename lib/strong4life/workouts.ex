@@ -288,18 +288,90 @@ defmodule Strong4life.Workouts do
   end
 
   @doc """
-  Gets the suggested weight for an exercise based on last session's performance.
-  Returns the weight used in the last session, or nil if no history.
+  Gets the suggested weight for an exercise based on last session's performance with progressive overload.
+
+  Returns a map with:
+  - `last_weight`: The weight used in the most recent completed session
+  - `suggested_weight`: Recommended weight (may include progressive overload)
+  - `progression_available`: Boolean indicating if user should increase weight
+  - `increment`: The recommended weight increase (5 lbs for compounds, 2.5 for accessories)
+
+  Returns nil if no previous workout history exists.
+
+  Progressive overload logic:
+  - If user completed all target reps on all sets → suggest weight increase
+  - Otherwise → suggest same weight (focus on completing reps first)
   """
   def get_suggested_weight(user_id, exercise_id) do
-    WorkoutSet
-    |> join(:inner, [ws], s in WorkoutSession, on: ws.workout_session_id == s.id)
-    |> where([ws, s], s.user_id == ^user_id and ws.exercise_id == ^exercise_id)
-    |> where([ws, s], not is_nil(s.completed_at))
-    |> order_by([ws, s], desc: s.completed_at)
-    |> limit(1)
-    |> select([ws], ws.weight)
-    |> Repo.one()
+    # Get the most recent completed session with this exercise
+    last_session_query =
+      WorkoutSession
+      |> join(:inner, [s], ws in WorkoutSet, on: ws.workout_session_id == s.id)
+      |> where([s, ws], s.user_id == ^user_id and ws.exercise_id == ^exercise_id)
+      |> where([s], not is_nil(s.completed_at))
+      |> order_by([s], desc: s.completed_at)
+      |> limit(1)
+      |> select([s], s.id)
+
+    last_session_id = Repo.one(last_session_query)
+
+    if last_session_id do
+      # Get all sets from that session for this exercise
+      sets =
+        WorkoutSet
+        |> where(
+          [ws],
+          ws.workout_session_id == ^last_session_id and ws.exercise_id == ^exercise_id
+        )
+        |> order_by([ws], asc: ws.set_number)
+        |> Repo.all()
+
+      if sets != [] do
+        # Get exercise info to determine if it's accessory (for increment calculation)
+        exercise = Repo.get!(Exercise, exercise_id)
+
+        # Get target reps from the workout template exercise
+        target_reps = get_target_reps_for_exercise(last_session_id, exercise_id)
+
+        # Calculate metrics
+        last_weight = sets |> Enum.map(& &1.weight) |> Enum.max()
+        all_reps_completed = Enum.all?(sets, fn set -> set.reps >= target_reps end)
+
+        # Determine increment: 5 lbs for main lifts, 2.5 lbs for accessories
+        increment = if exercise.is_accessory, do: Decimal.new("2.5"), else: Decimal.new("5")
+
+        # Calculate suggested weight
+        suggested_weight =
+          if all_reps_completed and last_weight do
+            Decimal.add(last_weight, increment)
+          else
+            last_weight
+          end
+
+        %{
+          last_weight: last_weight,
+          suggested_weight: suggested_weight,
+          progression_available: all_reps_completed,
+          increment: increment
+        }
+      else
+        nil
+      end
+    else
+      nil
+    end
+  end
+
+  defp get_target_reps_for_exercise(session_id, exercise_id) do
+    session = Repo.get!(WorkoutSession, session_id) |> Repo.preload(:workout_template)
+
+    wte =
+      WorkoutTemplateExercise
+      |> where([wte], wte.workout_template_id == ^session.workout_template_id)
+      |> where([wte], wte.exercise_id == ^exercise_id)
+      |> Repo.one()
+
+    if wte, do: wte.target_reps, else: 5
   end
 
   @doc """

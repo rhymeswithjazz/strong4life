@@ -40,7 +40,14 @@ defmodule Strong4lifeWeb.WorkoutLive do
     |> Enum.sort_by(& &1.order)
     |> Enum.map(fn wte ->
       exercise = wte.exercise
-      suggested_weight = Workouts.get_suggested_weight(user_id, exercise.id)
+      suggestion = Workouts.get_suggested_weight(user_id, exercise.id)
+
+      # Extract suggested weight from map or use nil if no history
+      suggested_weight =
+        case suggestion do
+          %{suggested_weight: weight} -> weight
+          _ -> nil
+        end
 
       # Get existing sets for this exercise in this session
       existing_sets =
@@ -76,6 +83,7 @@ defmodule Strong4lifeWeb.WorkoutLive do
       %{
         wte: wte,
         exercise: exercise,
+        suggestion: suggestion,
         suggested_weight: suggested_weight,
         sets: sets
       }
@@ -288,9 +296,50 @@ defmodule Strong4lifeWeb.WorkoutLive do
             <p class="text-slate-400 text-sm mb-4">
               {current_exercise.wte.target_sets} sets × {current_exercise.wte.target_reps} reps
             </p>
-            <%= if current_exercise.suggested_weight do %>
-              <div class="text-sm text-slate-500 mb-4">
-                Last time: {current_exercise.suggested_weight} lbs
+            <%= if current_exercise.suggestion do %>
+              <div class="mb-4 space-y-2">
+                <div class="flex items-center gap-2">
+                  <span class="text-sm text-slate-500">
+                    Last time: {current_exercise.suggestion.last_weight} lbs
+                  </span>
+                </div>
+                <%= if current_exercise.suggestion.progression_available do %>
+                  <div class="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 rounded-lg px-3 py-2">
+                    <svg
+                      class="w-4 h-4 text-emerald-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+                      />
+                    </svg>
+                    <span class="text-sm font-medium text-emerald-400">
+                      Try {current_exercise.suggestion.suggested_weight} lbs
+                      <span class="text-emerald-500/70">
+                        (+{current_exercise.suggestion.increment} lbs)
+                      </span>
+                    </span>
+                  </div>
+                <% else %>
+                  <div class="flex items-center gap-2 text-sm text-amber-400">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                      />
+                    </svg>
+                    <span>
+                      Focus on hitting all reps at {current_exercise.suggestion.last_weight} lbs
+                    </span>
+                  </div>
+                <% end %>
               </div>
             <% end %>
             
@@ -313,7 +362,7 @@ defmodule Strong4lifeWeb.WorkoutLive do
                   set={set}
                   exercise={current_exercise.exercise}
                   session_id={@session.id}
-                  suggested_weight={current_exercise.suggested_weight}
+                  suggestion={current_exercise.suggestion}
                   target_reps={current_exercise.wte.target_reps}
                 />
               <% end %>
@@ -363,10 +412,19 @@ defmodule Strong4lifeWeb.WorkoutLive do
   attr :set, :map, required: true
   attr :exercise, :map, required: true
   attr :session_id, :string, required: true
-  attr :suggested_weight, :any
+  attr :suggestion, :map
   attr :target_reps, :integer, required: true
 
   defp set_row(assigns) do
+    # Extract suggested weight from suggestion map
+    suggested_weight =
+      case assigns.suggestion do
+        %{suggested_weight: weight} -> weight
+        _ -> nil
+      end
+
+    assigns = assign(assigns, :suggested_weight, suggested_weight)
+
     ~H"""
     <form
       phx-submit="log_set"
