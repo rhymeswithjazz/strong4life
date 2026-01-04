@@ -289,7 +289,7 @@ defmodule Strong4lifeWeb.WorkoutLive do
   def render(assigns) do
     ~H"""
     <div class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      <div class="max-w-lg mx-auto px-4 py-6">
+      <div id="workout-container" phx-hook="RestTimer" class="max-w-lg mx-auto px-4 py-6">
         <!-- Header -->
         <header class="flex items-center justify-between mb-6">
           <.link navigate={~p"/dashboard"} class="text-slate-400 hover:text-white">
@@ -315,7 +315,6 @@ defmodule Strong4lifeWeb.WorkoutLive do
         <%= if @rest_timer do %>
           <div
             id="rest-timer-overlay"
-            phx-hook="RestTimer"
             class="fixed inset-0 bg-slate-900/95 backdrop-blur flex items-center justify-center z-50"
           >
             <div class="text-center max-w-md mx-auto px-6">
