@@ -81,6 +81,7 @@ defmodule Strong4lifeWeb.Router do
       live "/history", HistoryLive, :index
       live "/history/:id", HistoryLive, :show
       live "/progress", ProgressLive, :index
+      live "/settings", SettingsLive, :index
     end
   end
 
