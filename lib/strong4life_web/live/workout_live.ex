@@ -73,6 +73,7 @@ defmodule Strong4lifeWeb.WorkoutLive do
 
             existing ->
               %{
+                id: existing.id,
                 set_number: set_num,
                 weight: existing.weight,
                 reps: existing.reps,
