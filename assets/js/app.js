@@ -27,10 +27,12 @@ import topbar from "../vendor/topbar"
 
 // Custom hooks
 import Chart from "./hooks/chart"
+import RestTimer from "./hooks/rest_timer"
 
 const Hooks = {
   ...colocatedHooks,
-  Chart: Chart
+  Chart: Chart,
+  RestTimer: RestTimer
 }
 
 const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
