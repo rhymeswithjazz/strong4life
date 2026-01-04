@@ -53,6 +53,21 @@ defmodule Strong4lifeWeb.UserSettingsController do
     end
   end
 
+  def update(conn, %{"action" => "update_weight_unit"} = params) do
+    %{"user" => user_params} = params
+    user = conn.assigns.current_scope.user
+
+    case Accounts.update_user_weight_unit(user, user_params) do
+      {:ok, _user} ->
+        conn
+        |> put_flash(:info, "Weight unit preference updated successfully.")
+        |> redirect(to: ~p"/users/settings")
+
+      {:error, changeset} ->
+        render(conn, :edit, weight_unit_changeset: %{changeset | action: :update})
+    end
+  end
+
   def confirm_email(conn, %{"token" => token}) do
     case Accounts.update_user_email(conn.assigns.current_scope.user, token) do
       {:ok, _user} ->
@@ -73,5 +88,6 @@ defmodule Strong4lifeWeb.UserSettingsController do
     conn
     |> assign(:email_changeset, Accounts.change_user_email(user))
     |> assign(:password_changeset, Accounts.change_user_password(user))
+    |> assign(:weight_unit_changeset, Accounts.change_user_weight_unit(user))
   end
 end

@@ -180,7 +180,87 @@
         </button>
       </.form>
     </div>
-    
+
+<!-- Weight Unit Preferences Card -->
+    <div class="bg-slate-800/50 backdrop-blur rounded-2xl border border-slate-700 p-6 mb-6">
+      <h2 class="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+        <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
+          />
+        </svg>
+        Weight Unit Preference
+      </h2>
+
+      <p class="text-slate-400 text-sm mb-4">
+        Choose your preferred weight unit for tracking workouts.
+      </p>
+
+      <.form
+        :let={f}
+        for={@weight_unit_changeset}
+        action={~p"/users/settings"}
+        id="update_weight_unit"
+        class="space-y-4"
+      >
+        <input type="hidden" name="action" value="update_weight_unit" />
+
+        <div class="space-y-3">
+          <label class="flex items-center p-4 bg-slate-700/30 rounded-xl border-2 border-slate-600 cursor-pointer transition-all hover:bg-slate-700/50 has-[:checked]:border-purple-500 has-[:checked]:bg-purple-500/10">
+            <input
+              type="radio"
+              name="user[weight_unit]"
+              value="lbs"
+              checked={f[:weight_unit].value == "lbs"}
+              class="peer sr-only"
+            />
+            <div class="flex items-center justify-between w-full">
+              <div class="flex items-center gap-3">
+                <div class="w-5 h-5 rounded-full border-2 border-slate-500 peer-checked:border-purple-500 peer-checked:bg-purple-500 flex items-center justify-center">
+                  <div class="w-2 h-2 rounded-full bg-white opacity-0 peer-checked:opacity-100"></div>
+                </div>
+                <div>
+                  <div class="text-white font-medium">Pounds (lbs)</div>
+                  <div class="text-slate-400 text-sm">Standard US weight units</div>
+                </div>
+              </div>
+            </div>
+          </label>
+
+          <label class="flex items-center p-4 bg-slate-700/30 rounded-xl border-2 border-slate-600 cursor-pointer transition-all hover:bg-slate-700/50 has-[:checked]:border-purple-500 has-[:checked]:bg-purple-500/10">
+            <input
+              type="radio"
+              name="user[weight_unit]"
+              value="kg"
+              checked={f[:weight_unit].value == "kg"}
+              class="peer sr-only"
+            />
+            <div class="flex items-center justify-between w-full">
+              <div class="flex items-center gap-3">
+                <div class="w-5 h-5 rounded-full border-2 border-slate-500 peer-checked:border-purple-500 peer-checked:bg-purple-500 flex items-center justify-center">
+                  <div class="w-2 h-2 rounded-full bg-white opacity-0 peer-checked:opacity-100"></div>
+                </div>
+                <div>
+                  <div class="text-white font-medium">Kilograms (kg)</div>
+                  <div class="text-slate-400 text-sm">Metric weight units</div>
+                </div>
+              </div>
+            </div>
+          </label>
+        </div>
+
+        <button
+          type="submit"
+          class="w-full bg-purple-500 hover:bg-purple-400 text-white font-semibold py-3 rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98]"
+        >
+          Update Weight Unit
+        </button>
+      </.form>
+    </div>
+
 <!-- Logout Card -->
     <div class="bg-slate-800/50 backdrop-blur rounded-2xl border border-slate-700 p-6 mb-6">
       <h2 class="text-xl font-semibold text-white mb-4 flex items-center gap-2">
