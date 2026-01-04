@@ -29,7 +29,8 @@ defmodule Strong4lifeWeb.ProgressLive do
        weight_history: weight_history,
        volume_history: volume_history,
        chart_type: "weight",
-       date_range: date_range
+       date_range: date_range,
+       weight_unit: user.weight_unit
      )}
   end
 
@@ -183,7 +184,7 @@ defmodule Strong4lifeWeb.ProgressLive do
     <!-- Chart -->
         <div class="bg-slate-800/50 backdrop-blur rounded-2xl border border-slate-700 p-4 mb-6">
           <%= if @chart_type == "weight" do %>
-            <h3 class="text-white font-medium mb-4">Weight Progress (lbs)</h3>
+            <h3 class="text-white font-medium mb-4">Weight Progress ({@weight_unit})</h3>
             <%= if @weight_history == [] do %>
               <div class="text-center py-8 text-slate-500">
                 No data yet. Start logging workouts to see your progress!
@@ -201,7 +202,7 @@ defmodule Strong4lifeWeb.ProgressLive do
               </div>
             <% end %>
           <% else %>
-            <h3 class="text-white font-medium mb-4">Volume Progress (lbs × reps)</h3>
+            <h3 class="text-white font-medium mb-4">Volume Progress ({@weight_unit} × reps)</h3>
             <%= if @volume_history == [] do %>
               <div class="text-center py-8 text-slate-500">
                 No data yet. Start logging workouts to see your progress!
@@ -227,7 +228,8 @@ defmodule Strong4lifeWeb.ProgressLive do
             <div class="bg-slate-800/50 backdrop-blur rounded-2xl border border-slate-700 p-4">
               <div class="text-slate-400 text-sm mb-1">Best Weight</div>
               <div class="text-2xl font-bold text-white">
-                {get_max_weight(@weight_history)} <span class="text-sm text-slate-500">lbs</span>
+                {get_max_weight(@weight_history)}
+                <span class="text-sm text-slate-500">{@weight_unit}</span>
               </div>
             </div>
             <div class="bg-slate-800/50 backdrop-blur rounded-2xl border border-slate-700 p-4">

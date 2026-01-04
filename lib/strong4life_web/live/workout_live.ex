@@ -34,7 +34,8 @@ defmodule Strong4lifeWeb.WorkoutLive do
          rest_initial_duration: 0,
          custom_rest_duration: nil,
          show_complete_modal: false,
-         delete_set_id: nil
+         delete_set_id: nil,
+         weight_unit: user.weight_unit
        )}
     end
   end
@@ -449,7 +450,7 @@ defmodule Strong4lifeWeb.WorkoutLive do
               <div class="mb-4 space-y-2">
                 <div class="flex items-center gap-2">
                   <span class="text-sm text-slate-500">
-                    Last time: {current_exercise.suggestion.last_weight} lbs
+                    Last time: {current_exercise.suggestion.last_weight} {@weight_unit}
                   </span>
                 </div>
                 <%= if current_exercise.suggestion.progression_available do %>
@@ -468,9 +469,9 @@ defmodule Strong4lifeWeb.WorkoutLive do
                       />
                     </svg>
                     <span class="text-sm font-medium text-emerald-400">
-                      Try {current_exercise.suggestion.suggested_weight} lbs
+                      Try {current_exercise.suggestion.suggested_weight} {@weight_unit}
                       <span class="text-emerald-500/70">
-                        (+{current_exercise.suggestion.increment} lbs)
+                        (+{current_exercise.suggestion.increment} {@weight_unit})
                       </span>
                     </span>
                   </div>
@@ -485,7 +486,7 @@ defmodule Strong4lifeWeb.WorkoutLive do
                       />
                     </svg>
                     <span>
-                      Focus on hitting all reps at {current_exercise.suggestion.last_weight} lbs
+                      Focus on hitting all reps at {current_exercise.suggestion.last_weight} {@weight_unit}
                     </span>
                   </div>
                 <% end %>
@@ -573,7 +574,7 @@ defmodule Strong4lifeWeb.WorkoutLive do
                       {exercise.name} - Set {set_to_delete.set_number}
                     </p>
                     <div class="text-slate-400 text-sm space-y-1">
-                      <p>Weight: {set_to_delete.weight} lbs</p>
+                      <p>Weight: {set_to_delete.weight} {@weight_unit}</p>
                       <p>Reps: {set_to_delete.reps}</p>
                       <%= if set_to_delete.rpe do %>
                         <p>RPE: {set_to_delete.rpe}</p>
@@ -664,7 +665,7 @@ defmodule Strong4lifeWeb.WorkoutLive do
 
       <div class="grid grid-cols-3 gap-3">
         <div>
-          <label class="block text-slate-500 text-xs mb-1">Weight (lbs)</label>
+          <label class="block text-slate-500 text-xs mb-1">Weight ({@weight_unit})</label>
           <input
             type="number"
             name="weight"

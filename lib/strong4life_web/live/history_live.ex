@@ -13,7 +13,8 @@ defmodule Strong4lifeWeb.HistoryLive do
      assign(socket,
        page_title: "Workout History",
        sessions: sessions,
-       selected_session: nil
+       selected_session: nil,
+       weight_unit: user.weight_unit
      )}
   end
 
@@ -121,7 +122,7 @@ defmodule Strong4lifeWeb.HistoryLive do
                       <span class="text-slate-500">Set {set.set_number}</span>
                       <div class="flex items-center gap-4">
                         <span class="text-white">
-                          {set.weight || "-"} lbs × {set.reps || "-"}
+                          {set.weight || "-"} {@weight_unit} × {set.reps || "-"}
                         </span>
                         <%= if set.rpe do %>
                           <span class="text-slate-500">RPE {set.rpe}</span>

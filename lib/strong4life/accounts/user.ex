@@ -8,6 +8,7 @@ defmodule Strong4life.Accounts.User do
     field :hashed_password, :string, redact: true
     field :confirmed_at, :utc_datetime
     field :authenticated_at, :utc_datetime, virtual: true
+    field :weight_unit, :string, default: "lbs"
 
     timestamps(type: :utc_datetime)
   end
@@ -112,6 +113,16 @@ defmodule Strong4life.Accounts.User do
   def confirm_changeset(user) do
     now = DateTime.utc_now(:second)
     change(user, confirmed_at: now)
+  end
+
+  @doc """
+  A user changeset for updating weight unit preference.
+  """
+  def weight_unit_changeset(user, attrs) do
+    user
+    |> cast(attrs, [:weight_unit])
+    |> validate_required([:weight_unit])
+    |> validate_inclusion(:weight_unit, ["lbs", "kg"])
   end
 
   @doc """

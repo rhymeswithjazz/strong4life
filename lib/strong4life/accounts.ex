@@ -133,6 +133,34 @@ defmodule Strong4life.Accounts do
   end
 
   @doc """
+  Returns an `%Ecto.Changeset{}` for changing the user weight unit preference.
+
+  ## Examples
+
+      iex> change_user_weight_unit(user)
+      %Ecto.Changeset{data: %User{}}
+
+  """
+  def change_user_weight_unit(user, attrs \\ %{}) do
+    User.weight_unit_changeset(user, attrs)
+  end
+
+  @doc """
+  Updates the user weight unit preference.
+
+  ## Examples
+
+      iex> update_user_weight_unit(user, %{weight_unit: "kg"})
+      {:ok, %User{}}
+
+  """
+  def update_user_weight_unit(user, attrs) do
+    user
+    |> User.weight_unit_changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
   Returns an `%Ecto.Changeset{}` for changing the user password.
 
   See `Strong4life.Accounts.User.password_changeset/3` for a list of supported options.
