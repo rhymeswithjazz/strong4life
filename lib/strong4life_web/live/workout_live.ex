@@ -31,6 +31,8 @@ defmodule Strong4lifeWeb.WorkoutLive do
          current_exercise_index: 0,
          rest_timer: nil,
          rest_seconds: 0,
+         rest_initial_duration: 0,
+         custom_rest_duration: nil,
          show_complete_modal: false,
          delete_set_id: nil
        )}
@@ -148,13 +150,25 @@ defmodule Strong4lifeWeb.WorkoutLive do
 
   @impl true
   def handle_event("skip_rest", _params, socket) do
-    {:noreply, assign(socket, rest_timer: nil, rest_seconds: 0)}
+    socket = assign(socket, rest_timer: nil, rest_seconds: 0)
+    {:noreply, maybe_advance_to_next_exercise(socket)}
   end
 
   @impl true
   def handle_event("add_rest_time", %{"seconds" => seconds}, socket) do
     new_seconds = socket.assigns.rest_seconds + String.to_integer(seconds)
     {:noreply, assign(socket, rest_seconds: new_seconds)}
+  end
+
+  @impl true
+  def handle_event("reset_rest_timer", _params, socket) do
+    {:noreply, assign(socket, rest_seconds: socket.assigns.rest_initial_duration)}
+  end
+
+  @impl true
+  def handle_event("set_rest_duration", %{"duration" => duration}, socket) do
+    duration_int = String.to_integer(duration)
+    {:noreply, assign(socket, custom_rest_duration: duration_int)}
   end
 
   @impl true
@@ -236,8 +250,12 @@ defmodule Strong4lifeWeb.WorkoutLive do
       new_seconds = socket.assigns.rest_seconds - 1
 
       if new_seconds <= 0 do
-        # Rest complete - could play a sound here via JS hook
-        {:noreply, assign(socket, rest_timer: nil, rest_seconds: 0)}
+        # Rest complete - trigger audio and vibration notification, then maybe advance
+        {:noreply,
+         socket
+         |> assign(rest_timer: nil, rest_seconds: 0)
+         |> push_event("rest_timer_complete", %{})
+         |> maybe_advance_to_next_exercise()}
       else
         {:noreply, assign(socket, rest_seconds: new_seconds)}
       end
@@ -247,11 +265,36 @@ defmodule Strong4lifeWeb.WorkoutLive do
   end
 
   defp start_rest_timer(socket) do
-    # Default 2 minutes for compound, 90 seconds for accessory
+    # Use custom duration if set, otherwise default: 2 minutes for compound, 90 seconds for accessory
     current_exercise = Enum.at(socket.assigns.exercises, socket.assigns.current_exercise_index)
-    rest_time = if current_exercise.exercise.is_accessory, do: 90, else: 120
+    default_rest_time = if current_exercise.exercise.is_accessory, do: 90, else: 120
+    rest_time = socket.assigns.custom_rest_duration || default_rest_time
 
-    assign(socket, rest_timer: true, rest_seconds: rest_time)
+    assign(socket,
+      rest_timer: true,
+      rest_seconds: rest_time,
+      rest_initial_duration: rest_time
+    )
+  end
+
+  defp maybe_advance_to_next_exercise(socket) do
+    current_index = socket.assigns.current_exercise_index
+    current_exercise = Enum.at(socket.assigns.exercises, current_index)
+
+    # Check if all sets for current exercise are completed
+    all_sets_complete? =
+      current_exercise.sets
+      |> Enum.all?(fn set -> set.completed end)
+
+    # If all sets complete and there's a next exercise, advance
+    next_index = current_index + 1
+    has_next_exercise? = next_index < length(socket.assigns.exercises)
+
+    if all_sets_complete? && has_next_exercise? do
+      assign(socket, current_exercise_index: next_index)
+    else
+      socket
+    end
   end
 
   defp parse_decimal(""), do: nil
@@ -268,7 +311,7 @@ defmodule Strong4lifeWeb.WorkoutLive do
   def render(assigns) do
     ~H"""
     <div class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      <div class="max-w-lg mx-auto px-4 py-6">
+      <div id="workout-container" phx-hook="RestTimer" class="max-w-lg mx-auto px-4 py-6">
         <!-- Header -->
         <header class="flex items-center justify-between mb-6">
           <.link navigate={~p"/dashboard"} class="text-slate-400 hover:text-white">
@@ -292,28 +335,75 @@ defmodule Strong4lifeWeb.WorkoutLive do
         
     <!-- Rest Timer Overlay -->
         <%= if @rest_timer do %>
-          <div class="fixed inset-0 bg-slate-900/95 backdrop-blur flex items-center justify-center z-50">
-            <div class="text-center">
+          <div
+            id="rest-timer-overlay"
+            class="fixed inset-0 bg-slate-900/95 backdrop-blur flex items-center justify-center z-50"
+          >
+            <div class="text-center max-w-md mx-auto px-6">
               <div class="text-slate-400 text-lg mb-2">Rest Timer</div>
               <div class="text-7xl font-bold text-white mb-6">
                 {format_time(@rest_seconds)}
               </div>
-              <div class="flex gap-4 justify-center mb-6">
+              
+    <!-- Duration Picker -->
+              <div class="mb-6">
+                <label class="block text-slate-400 text-sm mb-3">Default Rest Duration</label>
+                <div class="flex gap-2 justify-center">
+                  <button
+                    phx-click="set_rest_duration"
+                    phx-value-duration="60"
+                    class={"px-4 py-2 rounded-xl font-medium transition-colors #{if @custom_rest_duration == 60, do: "bg-emerald-500 text-slate-900", else: "bg-slate-700 hover:bg-slate-600 text-white"}"}
+                  >
+                    1:00
+                  </button>
+                  <button
+                    phx-click="set_rest_duration"
+                    phx-value-duration="90"
+                    class={"px-4 py-2 rounded-xl font-medium transition-colors #{if @custom_rest_duration == 90, do: "bg-emerald-500 text-slate-900", else: "bg-slate-700 hover:bg-slate-600 text-white"}"}
+                  >
+                    1:30
+                  </button>
+                  <button
+                    phx-click="set_rest_duration"
+                    phx-value-duration="120"
+                    class={"px-4 py-2 rounded-xl font-medium transition-colors #{if @custom_rest_duration == 120, do: "bg-emerald-500 text-slate-900", else: "bg-slate-700 hover:bg-slate-600 text-white"}"}
+                  >
+                    2:00
+                  </button>
+                  <button
+                    phx-click="set_rest_duration"
+                    phx-value-duration="180"
+                    class={"px-4 py-2 rounded-xl font-medium transition-colors #{if @custom_rest_duration == 180, do: "bg-emerald-500 text-slate-900", else: "bg-slate-700 hover:bg-slate-600 text-white"}"}
+                  >
+                    3:00
+                  </button>
+                </div>
+              </div>
+              
+    <!-- Quick Adjust -->
+              <div class="flex gap-3 justify-center mb-6">
                 <button
                   phx-click="add_rest_time"
                   phx-value-seconds="30"
-                  class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-xl"
+                  class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-xl font-medium"
                 >
                   +30s
                 </button>
                 <button
                   phx-click="add_rest_time"
                   phx-value-seconds="60"
-                  class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-xl"
+                  class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-xl font-medium"
                 >
                   +1min
                 </button>
+                <button
+                  phx-click="reset_rest_timer"
+                  class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-xl font-medium"
+                >
+                  Reset
+                </button>
               </div>
+
               <button
                 phx-click="skip_rest"
                 class="bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-bold px-8 py-3 rounded-xl"
