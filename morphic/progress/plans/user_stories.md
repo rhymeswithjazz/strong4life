@@ -197,7 +197,7 @@ User stories for the Stronk workout tracking application.
 - App manifest is properly configured
 - App works offline (basic functionality)
 
-**Status:** 🔄 Partially Implemented (PWA setup, needs offline support)
+**Status:** ✅ Implemented
 
 ---
 
@@ -261,7 +261,7 @@ User stories for the Stronk workout tracking application.
 - All weights display in selected unit
 - Conversion is accurate
 
-**Status:** ❌ Not Implemented
+**Status:** ✅ Implemented
 
 ---
 
@@ -318,7 +318,7 @@ User stories for the Stronk workout tracking application.
 - Notes are visible in workout history
 - User can edit notes
 
-**Status:** ❌ Not Implemented
+**Status:** ✅ Implemented
 
 ---
 
@@ -357,9 +357,9 @@ User stories for the Stronk workout tracking application.
 - [x] US-018: Add Rest Timer
 
 ### P2 - Medium Priority
-- [ ] US-012: PWA Installation (offline support)
-- [ ] US-016: Set Weight Units
-- [ ] US-019: Add Workout Notes
+- [x] US-012: PWA Installation (offline support)
+- [x] US-016: Set Weight Units
+- [x] US-019: Add Workout Notes
 
 ### P3 - Low Priority
 - [ ] US-015: Export Workout Data
@@ -376,7 +376,6 @@ User stories for the Stronk workout tracking application.
 
 **Technical Debt:**
 - Need to generate actual PNG favicons
-- Offline PWA support
 - Performance optimization for large workout histories
 
 **Future Enhancements:**
