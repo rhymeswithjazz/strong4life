@@ -548,4 +548,217 @@ defmodule Strong4life.WorkoutsTest do
       assert changeset.changes.completed_at != nil
     end
   end
+
+  describe "get_exercise_weight_history/3" do
+    setup do
+      user = user_fixture()
+
+      # Create exercise with unique name
+      exercise_name = "Test Exercise #{:rand.uniform(1_000_000)}"
+
+      {:ok, exercise} =
+        %Exercise{}
+        |> Exercise.changeset(%{
+          name: exercise_name,
+          category: "compound",
+          is_accessory: false,
+          instructions: "Test instructions"
+        })
+        |> Repo.insert()
+
+      template_name = "Test Template #{:rand.uniform(1_000_000)}"
+
+      {:ok, template} =
+        %WorkoutTemplate{}
+        |> WorkoutTemplate.changeset(%{name: template_name})
+        |> Repo.insert()
+
+      # Create 10 completed workout sessions with sets
+      sessions =
+        for i <- 1..10 do
+          {:ok, session} =
+            %WorkoutSession{}
+            |> WorkoutSession.changeset(%{
+              user_id: user.id,
+              workout_template_id: template.id,
+              started_at: DateTime.add(DateTime.utc_now(), -i, :day),
+              completed_at: DateTime.add(DateTime.utc_now(), -i, :day)
+            })
+            |> Repo.insert()
+
+          # Log a set for each session
+          {:ok, _set} =
+            %WorkoutSet{}
+            |> WorkoutSet.changeset(%{
+              workout_session_id: session.id,
+              exercise_id: exercise.id,
+              set_number: 1,
+              weight: Decimal.new("#{100 + i * 5}"),
+              reps: 5
+            })
+            |> Repo.insert()
+
+          session
+        end
+
+      %{user: user, exercise: exercise, sessions: sessions}
+    end
+
+    test "returns weight history with default limit of 30", %{user: user, exercise: exercise} do
+      history = Workouts.get_exercise_weight_history(user.id, exercise.id)
+
+      # Should return all 10 sessions (less than default 30)
+      assert length(history) == 10
+    end
+
+    test "respects custom limit parameter", %{user: user, exercise: exercise} do
+      history = Workouts.get_exercise_weight_history(user.id, exercise.id, limit: 5)
+
+      assert length(history) == 5
+    end
+
+    test "returns data in chronological order (oldest first)", %{user: user, exercise: exercise} do
+      history = Workouts.get_exercise_weight_history(user.id, exercise.id, limit: 3)
+
+      # Should return 3 most recent sessions in chronological order
+      assert length(history) == 3
+
+      # Within the limit, data should be ordered oldest first (day -3, -2, -1)
+      # Weights are: day -1=105, day -2=110, day -3=115
+      # So in chronological order: [115, 110, 105] (descending)
+      weights = Enum.map(history, & &1.max_weight)
+      assert Enum.reverse(Enum.sort(weights)) == weights
+    end
+
+    test "handles limit of 0 by returning no results", %{user: user, exercise: exercise} do
+      history = Workouts.get_exercise_weight_history(user.id, exercise.id, limit: 0)
+
+      assert history == []
+    end
+
+    test "handles limit larger than available data", %{user: user, exercise: exercise} do
+      history = Workouts.get_exercise_weight_history(user.id, exercise.id, limit: 100)
+
+      # Should return all 10 sessions
+      assert length(history) == 10
+    end
+
+    test "returns empty list when no workout history exists", %{exercise: exercise} do
+      other_user = user_fixture()
+
+      history = Workouts.get_exercise_weight_history(other_user.id, exercise.id)
+
+      assert history == []
+    end
+  end
+
+  describe "get_exercise_volume_history/3" do
+    setup do
+      user = user_fixture()
+
+      # Create exercise with unique name
+      exercise_name = "Test Exercise #{:rand.uniform(1_000_000)}"
+
+      {:ok, exercise} =
+        %Exercise{}
+        |> Exercise.changeset(%{
+          name: exercise_name,
+          category: "compound",
+          is_accessory: false,
+          instructions: "Test instructions"
+        })
+        |> Repo.insert()
+
+      template_name = "Test Template #{:rand.uniform(1_000_000)}"
+
+      {:ok, template} =
+        %WorkoutTemplate{}
+        |> WorkoutTemplate.changeset(%{name: template_name})
+        |> Repo.insert()
+
+      # Create 8 completed workout sessions with multiple sets
+      sessions =
+        for i <- 1..8 do
+          {:ok, session} =
+            %WorkoutSession{}
+            |> WorkoutSession.changeset(%{
+              user_id: user.id,
+              workout_template_id: template.id,
+              started_at: DateTime.add(DateTime.utc_now(), -i, :day),
+              completed_at: DateTime.add(DateTime.utc_now(), -i, :day)
+            })
+            |> Repo.insert()
+
+          # Log 3 sets for each session
+          for set_num <- 1..3 do
+            {:ok, _set} =
+              %WorkoutSet{}
+              |> WorkoutSet.changeset(%{
+                workout_session_id: session.id,
+                exercise_id: exercise.id,
+                set_number: set_num,
+                weight: Decimal.new("100"),
+                reps: 5
+              })
+              |> Repo.insert()
+          end
+
+          session
+        end
+
+      %{user: user, exercise: exercise, sessions: sessions}
+    end
+
+    test "returns volume history with default limit of 30", %{user: user, exercise: exercise} do
+      history = Workouts.get_exercise_volume_history(user.id, exercise.id)
+
+      # Should return all 8 sessions
+      assert length(history) == 8
+    end
+
+    test "respects custom limit parameter", %{user: user, exercise: exercise} do
+      history = Workouts.get_exercise_volume_history(user.id, exercise.id, limit: 3)
+
+      assert length(history) == 3
+    end
+
+    test "calculates volume correctly (weight × reps × sets)", %{
+      user: user,
+      exercise: exercise
+    } do
+      history = Workouts.get_exercise_volume_history(user.id, exercise.id, limit: 1)
+
+      assert length(history) == 1
+
+      # Each session has 3 sets of 100 lbs × 5 reps = 1500 lbs per session
+      expected_volume = Decimal.new("1500")
+      assert Decimal.eq?(hd(history).volume, expected_volume)
+    end
+
+    test "returns data in chronological order (oldest first)", %{user: user, exercise: exercise} do
+      history = Workouts.get_exercise_volume_history(user.id, exercise.id)
+
+      # Should return sessions in chronological order (oldest first)
+      assert length(history) == 8
+
+      # All volumes should be the same since all sessions have same weight/reps
+      volumes = Enum.map(history, & &1.volume)
+      assert Enum.all?(volumes, &Decimal.eq?(&1, hd(volumes)))
+    end
+
+    test "handles limit larger than available data", %{user: user, exercise: exercise} do
+      history = Workouts.get_exercise_volume_history(user.id, exercise.id, limit: 50)
+
+      # Should return all 8 sessions
+      assert length(history) == 8
+    end
+
+    test "returns empty list when no workout history exists", %{exercise: exercise} do
+      other_user = user_fixture()
+
+      history = Workouts.get_exercise_volume_history(other_user.id, exercise.id)
+
+      assert history == []
+    end
+  end
 end

@@ -163,7 +163,7 @@ User stories for the Stronk workout tracking application.
 - User can select date range
 - Charts are mobile-friendly
 
-**Status:** 🔄 Partially Implemented (needs charts)
+**Status:** ✅ Implemented
 
 ---
 
@@ -343,7 +343,7 @@ User stories for the Stronk workout tracking application.
 
 ### P1 - High Priority
 - [x] US-006: View Suggested Weights (improve with progressive overload)
-- [ ] US-010: Track Progress Charts
+- [x] US-010: Track Progress Charts
 - [ ] US-013: Edit Logged Set
 - [ ] US-014: Delete Logged Set
 - [ ] US-018: Add Rest Timer

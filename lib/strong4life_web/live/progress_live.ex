@@ -6,6 +6,7 @@ defmodule Strong4lifeWeb.ProgressLive do
   @impl true
   def mount(_params, _session, socket) do
     user = socket.assigns.current_scope.user
+    date_range = 30
 
     exercises = Workouts.list_exercises()
     selected_exercise = List.first(exercises)
@@ -13,8 +14,8 @@ defmodule Strong4lifeWeb.ProgressLive do
     {weight_history, volume_history} =
       if selected_exercise do
         {
-          Workouts.get_exercise_weight_history(user.id, selected_exercise.id),
-          Workouts.get_exercise_volume_history(user.id, selected_exercise.id)
+          Workouts.get_exercise_weight_history(user.id, selected_exercise.id, limit: date_range),
+          Workouts.get_exercise_volume_history(user.id, selected_exercise.id, limit: date_range)
         }
       else
         {[], []}
@@ -27,20 +28,22 @@ defmodule Strong4lifeWeb.ProgressLive do
        selected_exercise: selected_exercise,
        weight_history: weight_history,
        volume_history: volume_history,
-       chart_type: "weight"
+       chart_type: "weight",
+       date_range: date_range
      )}
   end
 
   @impl true
   def handle_event("select_exercise", %{"exercise_id" => exercise_id}, socket) do
     user = socket.assigns.current_scope.user
+    date_range = socket.assigns.date_range
     selected_exercise = Enum.find(socket.assigns.exercises, &(&1.id == exercise_id))
 
     {weight_history, volume_history} =
       if selected_exercise do
         {
-          Workouts.get_exercise_weight_history(user.id, selected_exercise.id),
-          Workouts.get_exercise_volume_history(user.id, selected_exercise.id)
+          Workouts.get_exercise_weight_history(user.id, selected_exercise.id, limit: date_range),
+          Workouts.get_exercise_volume_history(user.id, selected_exercise.id, limit: date_range)
         }
       else
         {[], []}
@@ -57,6 +60,39 @@ defmodule Strong4lifeWeb.ProgressLive do
   @impl true
   def handle_event("toggle_chart", %{"type" => type}, socket) do
     {:noreply, assign(socket, chart_type: type)}
+  end
+
+  @impl true
+  def handle_event("change_date_range", %{"date_range" => range_value}, socket) do
+    user = socket.assigns.current_scope.user
+    selected_exercise = socket.assigns.selected_exercise
+
+    # Convert range value to limit number
+    limit =
+      case range_value do
+        "7" -> 7
+        "30" -> 30
+        "90" -> 90
+        "all" -> 1000
+        _ -> 30
+      end
+
+    {weight_history, volume_history} =
+      if selected_exercise do
+        {
+          Workouts.get_exercise_weight_history(user.id, selected_exercise.id, limit: limit),
+          Workouts.get_exercise_volume_history(user.id, selected_exercise.id, limit: limit)
+        }
+      else
+        {[], []}
+      end
+
+    {:noreply,
+     assign(socket,
+       date_range: limit,
+       weight_history: weight_history,
+       volume_history: volume_history
+     )}
   end
 
   @impl true
@@ -127,6 +163,21 @@ defmodule Strong4lifeWeb.ProgressLive do
           >
             Volume
           </button>
+        </div>
+        
+    <!-- Date Range Selector -->
+        <div class="mb-6">
+          <label class="block text-slate-400 text-sm mb-2">Time Range</label>
+          <select
+            phx-change="change_date_range"
+            name="date_range"
+            class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          >
+            <option value="7" selected={@date_range == 7}>Last 7 days</option>
+            <option value="30" selected={@date_range == 30}>Last 30 days</option>
+            <option value="90" selected={@date_range == 90}>Last 3 months</option>
+            <option value="all" selected={@date_range == 1000}>All time</option>
+          </select>
         </div>
         
     <!-- Chart -->
