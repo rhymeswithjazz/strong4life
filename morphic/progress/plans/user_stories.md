@@ -342,7 +342,7 @@ User stories for the Stronk workout tracking application.
 - [x] US-011: Mobile-First Design
 
 ### P1 - High Priority
-- [ ] US-006: View Suggested Weights (improve with progressive overload)
+- [x] US-006: View Suggested Weights (improve with progressive overload)
 - [ ] US-010: Track Progress Charts
 - [ ] US-013: Edit Logged Set
 - [ ] US-014: Delete Logged Set
